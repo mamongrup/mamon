@@ -29,6 +29,21 @@ kullanılmalıdır. Şema ayrıca `sql/001_initial.sql` içinde tutulur.
 DeepSeek anahtarı yalnızca sunucu ortamında tutulmalı, istemci koduna veya
 Git deposuna yazılmamalıdır.
 
+## Site mimarisi
+
+Statik yayın paketi büyümeye uygun çok sayfalı yapıdadır:
+
+- `/`: kurumsal ana sayfa
+- `/kurumsal/`: şirket profili
+- `/turizm/`: TÜRSAB ve turizm markaları
+- `/emlak/`: emlak faaliyetleri
+- `/insaat/`: inşaat faaliyetleri
+- `/projeler/`: proje arşivi
+- `/en/`: İngilizce giriş sayfası
+
+Yeni projeler Gleam yönetim panelinden eklendiğinde kendilerine ait
+`/projeler/{slug}` adreslerinde yayınlanacak şekilde modellenmiştir.
+
 ## Development
 
 ```sh
