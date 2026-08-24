@@ -10,6 +10,7 @@ import gleam/io
 import gleam/list
 import gleam/option.{None, Some}
 import gleam/result
+import gleam/string
 import mist
 import wisp
 import wisp/wisp_mist
@@ -34,37 +35,54 @@ pub fn handle_request(
 ) -> wisp.Response {
   use <- wisp.log_request(req)
   use <- wisp.serve_static(req, under: "/static", from: "public")
-  case req.method, request.path_segments(req) {
-    Get, [] -> wisp.html_response(home, 200)
-    Get, ["admin"] -> wisp.html_response(admin, 200)
-    Get, ["admin", "pages"] ->
+  let admin_allowed = admin_host_allowed(req)
+  case req.method, request.path_segments(req), admin_allowed {
+    Get, [], _ -> wisp.html_response(home, 200)
+    Get, ["admin"], True -> wisp.html_response(admin, 200)
+    Get, ["admin", "pages"], True ->
       wisp.html_response(cms.admin_entries(db, "pages"), 200)
-    Get, ["admin", "projects"] ->
+    Get, ["admin", "projects"], True ->
       wisp.html_response(cms.admin_entries(db, "projects"), 200)
-    Post, ["admin", "pages"] -> create_entry(req, db, "pages")
-    Post, ["admin", "projects"] -> create_entry(req, db, "projects")
-    Post, ["admin", table, id, "delete"] -> delete_entry(db, table, id)
-    Get, ["sayfa", slug] -> show_entry(db, "pages", "sayfa", slug)
-    Get, ["projeler", slug] -> show_entry(db, "projects", "projeler", slug)
-    Get, ["sitemap.xml"] ->
+    Post, ["admin", "pages"], True -> create_entry(req, db, "pages")
+    Post, ["admin", "projects"], True -> create_entry(req, db, "projects")
+    Post, ["admin", table, id, "delete"], True -> delete_entry(db, table, id)
+    Post, ["admin", "save"], True -> saved(req, db)
+    _, ["admin", ..], False ->
+      wisp.html_response(
+        "<main><h1>404</h1><a href='/'>Ana sayfa</a></main>",
+        404,
+      )
+    Get, ["sayfa", slug], _ -> show_entry(db, "pages", "sayfa", slug)
+    Get, ["projeler", slug], _ -> show_entry(db, "projects", "projeler", slug)
+    Get, ["sitemap.xml"], _ ->
       wisp.html_response(cms.sitemap(db), 200)
       |> response.set_header("content-type", "application/xml; charset=utf-8")
-    Get, ["robots.txt"] ->
+    Get, ["robots.txt"], _ ->
       wisp.html_response(
         "User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: https://mamon.tr/sitemap.xml\n",
         200,
       )
       |> response.set_header("content-type", "text/plain; charset=utf-8")
-    Get, ["hx", "regions"] -> wisp.html_response(regions, 200)
-    Post, ["hx", "contact"] -> message(req, db)
-    Post, ["hx", "chat"] -> chat_message(req)
-    Post, ["admin", "save"] -> saved(req, db)
-    _, _ ->
+    Get, ["hx", "regions"], _ -> wisp.html_response(regions, 200)
+    Post, ["hx", "contact"], _ -> message(req, db)
+    Post, ["hx", "chat"], _ -> chat_message(req)
+    _, _, _ ->
       wisp.html_response(
         "<main><h1>404</h1><a href='/'>Ana sayfa</a></main>",
         404,
       )
   }
+}
+
+fn admin_host_allowed(req: wisp.Request) -> Bool {
+  let host =
+    request.get_header(req, "host")
+    |> result.unwrap("")
+    |> string.lowercase
+    |> string.split(":")
+    |> list.first
+    |> result.unwrap("")
+  list.contains(["mamon.tr", "www.mamon.tr", "localhost", "127.0.0.1"], host)
 }
 
 fn show_entry(db, table, kind, slug) {
