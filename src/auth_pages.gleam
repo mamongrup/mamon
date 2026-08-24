@@ -21,59 +21,71 @@ fn page(
   <> "</div></section></main></body></html>"
 }
 
-pub fn login(message: String) -> String {
+pub fn login(csrf_token: String, message: String) -> String {
   let notice = case message {
     "" -> ""
     _ -> "<div class='notice error'>" <> cms.escape(message) <> "</div>"
   }
+  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   page(
     "Giriş",
     "Panel girişi",
     "Yönetim hesabınızla güvenli oturum açın.",
     notice
-      <> "<form class='auth-form' method='post' action='/admin/login'><label>E-posta adresi<input type='email' name='email' autocomplete='email' required></label><label>Parola<input type='password' name='password' autocomplete='current-password' required></label><button>Oturum aç</button></form><div class='auth-links'><a href='/admin/forgot-password'>Parolamı unuttum</a><a href='/admin/register'>Hesap oluştur</a></div>",
+      <> "<form class='auth-form' method='post' action='/admin/login'>"
+      <> csrf_field
+      <> "<label>E-posta adresi<input type='email' name='email' autocomplete='email' required></label><label>Parola<input type='password' name='password' autocomplete='current-password' required></label><button>Oturum aç</button></form><div class='auth-links'><a href='/admin/forgot-password'>Parolamı unuttum</a><a href='/admin/register'>Hesap oluştur</a></div>",
   )
 }
 
-pub fn register(message: String) -> String {
+pub fn register(csrf_token: String, message: String) -> String {
   let notice = case message {
     "" -> ""
     _ -> "<div class='notice error'>" <> cms.escape(message) <> "</div>"
   }
+  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   page(
     "Hesap Oluştur",
     "Hesap oluşturun",
     "Güvenlik için yalnızca ilk yönetici hesabı buradan oluşturulabilir; ardından açık kayıt otomatik kapanır.",
     notice
-      <> "<form class='auth-form' method='post' action='/admin/register'><label>Ad soyad<input name='display_name' autocomplete='name' minlength='2' required></label><label>E-posta adresi<input type='email' name='email' autocomplete='email' required></label><label>Parola<input type='password' name='password' autocomplete='new-password' minlength='12' required></label><label>Parola tekrar<input type='password' name='password_confirm' autocomplete='new-password' minlength='12' required></label><button>Hesap oluştur</button></form><div class='auth-links'><a href='/admin/login'>Zaten hesabınız var mı?</a></div>",
+      <> "<form class='auth-form' method='post' action='/admin/register'>"
+      <> csrf_field
+      <> "<label>Ad soyad<input name='display_name' autocomplete='name' minlength='2' required></label><label>E-posta adresi<input type='email' name='email' autocomplete='email' required></label><label>Parola<input type='password' name='password' autocomplete='new-password' minlength='12' required></label><label>Parola tekrar<input type='password' name='password_confirm' autocomplete='new-password' minlength='12' required></label><button>Hesap oluştur</button></form><div class='auth-links'><a href='/admin/login'>Zaten hesabınız var mı?</a></div>",
   )
 }
 
-pub fn forgot(message: String) -> String {
+pub fn forgot(csrf_token: String, message: String) -> String {
   let notice = case message {
     "" -> ""
     _ -> "<div class='notice'>" <> cms.escape(message) <> "</div>"
   }
+  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   page(
     "Parola Hatırlatma",
     "Parolanızı yenileyin",
     "Hesabınıza ait e-posta adresini girin. Geçerli hesap varsa güvenli sıfırlama kaydı oluşturulur.",
     notice
-      <> "<form class='auth-form' method='post' action='/admin/forgot-password'><label>E-posta adresi<input type='email' name='email' autocomplete='email' required></label><button>Sıfırlama bağlantısı iste</button></form><div class='auth-links'><a href='/admin/login'>Giriş sayfasına dön</a></div>",
+      <> "<form class='auth-form' method='post' action='/admin/forgot-password'>"
+      <> csrf_field
+      <> "<label>E-posta adresi<input type='email' name='email' autocomplete='email' required></label><button>Sıfırlama bağlantısı iste</button></form><div class='auth-links'><a href='/admin/login'>Giriş sayfasına dön</a></div>",
   )
 }
 
-pub fn reset(token: String, message: String) -> String {
+pub fn reset(csrf_token: String, token: String, message: String) -> String {
   let notice = case message {
     "" -> ""
     _ -> "<div class='notice error'>" <> cms.escape(message) <> "</div>"
   }
+  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   page(
     "Yeni Parola",
     "Yeni parola belirleyin",
     "En az 12 karakterden oluşan güçlü bir parola kullanın.",
     notice
-      <> "<form class='auth-form' method='post' action='/admin/reset-password'><input type='hidden' name='token' value='"
+      <> "<form class='auth-form' method='post' action='/admin/reset-password'>"
+      <> csrf_field
+      <> "<input type='hidden' name='token' value='"
       <> cms.escape(token)
       <> "'><label>Yeni parola<input type='password' name='password' autocomplete='new-password' minlength='12' required></label><label>Yeni parola tekrar<input type='password' name='password_confirm' autocomplete='new-password' minlength='12' required></label><button>Parolayı güncelle</button></form>",
   )

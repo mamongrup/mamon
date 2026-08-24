@@ -49,11 +49,13 @@ pub fn entry_page(entry: Entry, kind: String) -> String {
   <> "</article><a class='btn dark' href='/'>← Ana sayfa</a></main></body></html>"
 }
 
-pub fn admin_entries(database: Database, table: String) -> String {
+pub fn admin_entries(csrf_token: String, database: Database, table: String) -> String {
   let label = case table {
     "pages" -> "Sayfalar"
     _ -> "Projeler"
   }
+  let hx = "hx-headers='" <> "{\"x-csrf-token\":\"" <> csrf_token <> "\"}" <> "'"
+  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   let rows =
     database.list_entries(database, table)
     |> list.map(fn(entry) {
@@ -75,7 +77,11 @@ pub fn admin_entries(database: Database, table: String) -> String {
     |> string.join("")
   "<!doctype html><html lang='tr'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Mamon Yönetim — "
   <> label
-  <> "</title><link rel='stylesheet' href='/static/styles.css'><link rel='stylesheet' href='/static/admin.css'><script src='https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js' defer></script></head><body class='admin-body'><aside><a class='brand' href='/'><i>M</i>MAMON</a><small>YÖNETİM PANELİ</small><nav><a href='/admin'>⌂ Genel Bakış</a><a href='/admin/pages'>▤ Sayfalar</a><a href='/admin/projects'>◈ Projeler</a></nav><form class='logout-form' method='post' action='/admin/logout'><button>Oturumu kapat</button></form><a class='back' href='/'>← Siteye dön</a></aside><main class='admin-main'><header><div><small>İÇERİK YÖNETİMİ</small><h1>"
+  <> "</title><link rel='stylesheet' href='/static/styles.css'><link rel='stylesheet' href='/static/admin.css'><script src='https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js' defer></script></head><body class='admin-body' "
+  <> hx
+  <> "><aside><a class='brand' href='/'><i>M</i>MAMON</a><small>YÖNETİM PANELİ</small><nav><a href='/admin'>⌂ Genel Bakış</a><a href='/admin/pages'>▤ Sayfalar</a><a href='/admin/projects'>◈ Projeler</a></nav><form class='logout-form' method='post' action='/admin/logout'>"
+  <> csrf_field
+  <> "<button>Oturumu kapat</button></form><a class='back' href='/'>← Siteye dön</a></aside><main class='admin-main'><header><div><small>İÇERİK YÖNETİMİ</small><h1>"
   <> label
   <> "</h1></div></header><section class='admin-grid cms-grid'><div class='panel'><header><div><small>YAYINDAKİ KAYITLAR</small><h2>"
   <> label
@@ -85,7 +91,9 @@ pub fn admin_entries(database: Database, table: String) -> String {
   <> label
   <> " oluştur</h2></div></header><form class='cms-form' hx-post='/admin/"
   <> table
-  <> "' hx-target='body' hx-push-url='true'><label>Başlık<input required name='title'></label><label>URL kısa adı<input required name='slug' placeholder='ornek-sayfa'></label><label>Kısa açıklama<textarea name='summary'></textarea></label><label>İçerik<textarea name='body'></textarea></label><label>SEO başlığı<input name='seo_title'></label><label>Meta açıklaması<textarea name='seo_description' maxlength='160'></textarea></label><button class='btn accent'>Kaydet ve yayınla</button></form></div></section></main></body></html>"
+  <> "' hx-target='body' hx-push-url='true'>"
+  <> csrf_field
+  <> "<label>Başlık<input required name='title'></label><label>URL kısa adı<input required name='slug' placeholder='ornek-sayfa'></label><label>Kısa açıklama<textarea name='summary'></textarea></label><label>İçerik<textarea name='body'></textarea></label><label>SEO başlığı<input name='seo_title'></label><label>Meta açıklaması<textarea name='seo_description' maxlength='160'></textarea></label><button class='btn accent'>Kaydet ve yayınla</button></form></div></section></main></body></html>"
 }
 
 pub fn sitemap(database: Database) -> String {
