@@ -1,7 +1,10 @@
+import database
 import gleam/erlang/process
 import gleam/http.{Get, Post}
 import gleam/http/request
 import gleam/io
+import gleam/list
+import gleam/result
 import mist
 import wisp
 import wisp/wisp_mist
@@ -9,8 +12,9 @@ import wisp/wisp_mist
 const secret = "mamon-development-secret-change-in-production-2026"
 
 pub fn main() {
+  let db = database.connect()
   let assert Ok(_) =
-    handle_request
+    fn(request) { handle_request(request, db) }
     |> wisp_mist.handler(secret)
     |> mist.new
     |> mist.port(8000)
@@ -19,15 +23,18 @@ pub fn main() {
   process.sleep_forever()
 }
 
-pub fn handle_request(req: wisp.Request) -> wisp.Response {
+pub fn handle_request(
+  req: wisp.Request,
+  db: database.Database,
+) -> wisp.Response {
   use <- wisp.log_request(req)
   use <- wisp.serve_static(req, under: "/static", from: "public")
   case req.method, request.path_segments(req) {
     Get, [] -> wisp.html_response(home, 200)
     Get, ["admin"] -> wisp.html_response(admin, 200)
     Get, ["hx", "regions"] -> wisp.html_response(regions, 200)
-    Post, ["hx", "contact"] -> message(req)
-    Post, ["admin", "save"] -> saved(req)
+    Post, ["hx", "contact"] -> message(req, db)
+    Post, ["admin", "save"] -> saved(req, db)
     _, _ ->
       wisp.html_response(
         "<main><h1>404</h1><a href='/'>Ana sayfa</a></main>",
@@ -36,20 +43,50 @@ pub fn handle_request(req: wisp.Request) -> wisp.Response {
   }
 }
 
-fn message(req) {
-  use _ <- wisp.require_string_body(req)
-  wisp.html_response(
-    "<div class='success'><b>Talebiniz alındı.</b><span>Ekibimiz en kısa sürede sizinle iletişime geçecek.</span></div>",
-    200,
-  )
+fn message(req, db) {
+  use form <- wisp.require_form(req)
+  let name = list.key_find(form.values, "name") |> result.unwrap("")
+  let email = list.key_find(form.values, "email") |> result.unwrap("")
+  let area = list.key_find(form.values, "area") |> result.unwrap("")
+  let text = list.key_find(form.values, "message") |> result.unwrap("")
+  case database.save_contact(db, name, email, area, text) {
+    True ->
+      wisp.html_response(
+        "<div class='success'><b>Talebiniz alındı.</b><span>Ekibimiz en kısa sürede sizinle iletişime geçecek.</span></div>",
+        200,
+      )
+    False ->
+      wisp.html_response(
+        "<div class='success'><b>Talep kaydedilemedi.</b><span>Lütfen doğrudan e-posta ile iletişime geçin.</span></div>",
+        503,
+      )
+  }
 }
 
-fn saved(req) {
-  use _ <- wisp.require_string_body(req)
-  wisp.html_response(
-    "<div class='saved'>✓ Değişiklikler taslak olarak kaydedildi.</div>",
-    200,
-  )
+fn saved(req, db) {
+  use form <- wisp.require_form(req)
+  let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
+  case
+    database.save_home_content(
+      db,
+      get("eyebrow"),
+      get("title"),
+      get("description"),
+      get("cta"),
+      get("url"),
+    )
+  {
+    True ->
+      wisp.html_response(
+        "<div class='saved'>✓ Değişiklikler veritabanına kaydedildi.</div>",
+        200,
+      )
+    False ->
+      wisp.html_response(
+        "<div class='saved'>Veritabanı bağlantısı kurulamadı.</div>",
+        503,
+      )
+  }
 }
 
 const head = "<meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet'><link rel='stylesheet' href='/static/styles.css'><script src='https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js' defer></script>"
