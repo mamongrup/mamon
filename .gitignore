@@ -1,0 +1,8 @@
+/build/
+/erl_crash.dump
+/.env
+/.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
