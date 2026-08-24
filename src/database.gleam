@@ -23,6 +23,10 @@ pub type Entry {
   )
 }
 
+pub type AdminUser {
+  AdminUser(id: Int, email: String, display_name: String, is_active: Bool)
+}
+
 pub fn connect() -> Database {
   let connection = {
     use url <- result.try(envoy.get("DATABASE_URL"))
@@ -49,10 +53,153 @@ pub fn connect() -> Database {
 
 fn migrate(connection: pog.Connection) -> Bool {
   pog.query(
-    "CREATE TABLE IF NOT EXISTS site_content (content_key TEXT PRIMARY KEY, content_value TEXT NOT NULL, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE TABLE IF NOT EXISTS contact_requests (id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL, area TEXT NOT NULL, message TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'new', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE TABLE IF NOT EXISTS admin_users (id BIGSERIAL PRIMARY KEY, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, display_name TEXT NOT NULL, is_active BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE TABLE IF NOT EXISTS pages (id BIGSERIAL PRIMARY KEY, title TEXT NOT NULL, slug TEXT UNIQUE NOT NULL, summary TEXT NOT NULL DEFAULT '', body TEXT NOT NULL DEFAULT '', seo_title TEXT NOT NULL DEFAULT '', seo_description TEXT NOT NULL DEFAULT '', is_published BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE TABLE IF NOT EXISTS projects (id BIGSERIAL PRIMARY KEY, title TEXT NOT NULL, slug TEXT UNIQUE NOT NULL, summary TEXT NOT NULL DEFAULT '', body TEXT NOT NULL DEFAULT '', seo_title TEXT NOT NULL DEFAULT '', seo_description TEXT NOT NULL DEFAULT '', is_published BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE INDEX IF NOT EXISTS contact_requests_created_at_idx ON contact_requests (created_at DESC); CREATE INDEX IF NOT EXISTS pages_slug_idx ON pages (slug); CREATE INDEX IF NOT EXISTS projects_slug_idx ON projects (slug);",
+    "CREATE TABLE IF NOT EXISTS site_content (content_key TEXT PRIMARY KEY, content_value TEXT NOT NULL, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE TABLE IF NOT EXISTS contact_requests (id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL, area TEXT NOT NULL, message TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'new', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE TABLE IF NOT EXISTS admin_users (id BIGSERIAL PRIMARY KEY, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, display_name TEXT NOT NULL, is_active BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE TABLE IF NOT EXISTS password_reset_tokens (id BIGSERIAL PRIMARY KEY, user_id BIGINT NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE, token_hash TEXT UNIQUE NOT NULL, expires_at TIMESTAMPTZ NOT NULL, used_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE TABLE IF NOT EXISTS pages (id BIGSERIAL PRIMARY KEY, title TEXT NOT NULL, slug TEXT UNIQUE NOT NULL, summary TEXT NOT NULL DEFAULT '', body TEXT NOT NULL DEFAULT '', seo_title TEXT NOT NULL DEFAULT '', seo_description TEXT NOT NULL DEFAULT '', is_published BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE TABLE IF NOT EXISTS projects (id BIGSERIAL PRIMARY KEY, title TEXT NOT NULL, slug TEXT UNIQUE NOT NULL, summary TEXT NOT NULL DEFAULT '', body TEXT NOT NULL DEFAULT '', seo_title TEXT NOT NULL DEFAULT '', seo_description TEXT NOT NULL DEFAULT '', is_published BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE INDEX IF NOT EXISTS contact_requests_created_at_idx ON contact_requests (created_at DESC); CREATE INDEX IF NOT EXISTS pages_slug_idx ON pages (slug); CREATE INDEX IF NOT EXISTS projects_slug_idx ON projects (slug); CREATE INDEX IF NOT EXISTS password_reset_tokens_hash_idx ON password_reset_tokens (token_hash);",
   )
   |> pog.execute(on: connection)
   |> result.is_ok
+}
+
+fn admin_user_decoder() {
+  use id <- decode.field(0, decode.int)
+  use email <- decode.field(1, decode.string)
+  use display_name <- decode.field(2, decode.string)
+  use is_active <- decode.field(3, decode.bool)
+  decode.success(AdminUser(id, email, display_name, is_active))
+}
+
+pub fn admin_count(database: Database) -> Int {
+  case database {
+    Some(connection) ->
+      pog.query("SELECT COUNT(*)::INTEGER FROM admin_users")
+      |> pog.returning({
+        use count <- decode.field(0, decode.int)
+        decode.success(count)
+      })
+      |> pog.execute(on: connection)
+      |> result.map(fn(data) { data.rows |> list.first |> result.unwrap(0) })
+      |> result.unwrap(0)
+    None -> 0
+  }
+}
+
+pub fn create_admin(
+  database: Database,
+  email: String,
+  password_hash: String,
+  display_name: String,
+  active: Bool,
+) -> Bool {
+  case database {
+    Some(connection) ->
+      pog.query(
+        "INSERT INTO admin_users (email, password_hash, display_name, is_active) SELECT $1, $2, $3, $4 WHERE NOT EXISTS (SELECT 1 FROM admin_users) ON CONFLICT (email) DO NOTHING RETURNING id",
+      )
+      |> pog.parameter(pog.text(email))
+      |> pog.parameter(pog.text(password_hash))
+      |> pog.parameter(pog.text(display_name))
+      |> pog.parameter(pog.bool(active))
+      |> pog.returning({
+        use id <- decode.field(0, decode.int)
+        decode.success(id)
+      })
+      |> pog.execute(on: connection)
+      |> result.map(fn(data) { list.length(data.rows) == 1 })
+      |> result.unwrap(False)
+    None -> False
+  }
+}
+
+pub fn find_admin_by_email(
+  database: Database,
+  email: String,
+) -> Option(#(AdminUser, String)) {
+  case database {
+    Some(connection) ->
+      pog.query(
+        "SELECT id, email, display_name, is_active, password_hash FROM admin_users WHERE email = $1 LIMIT 1",
+      )
+      |> pog.parameter(pog.text(email))
+      |> pog.returning({
+        use id <- decode.field(0, decode.int)
+        use found_email <- decode.field(1, decode.string)
+        use display_name <- decode.field(2, decode.string)
+        use is_active <- decode.field(3, decode.bool)
+        use password_hash <- decode.field(4, decode.string)
+        decode.success(#(
+          AdminUser(id, found_email, display_name, is_active),
+          password_hash,
+        ))
+      })
+      |> pog.execute(on: connection)
+      |> result.map(fn(data) { data.rows })
+      |> result.unwrap([])
+      |> list.first
+      |> option.from_result
+    None -> None
+  }
+}
+
+pub fn find_active_admin(database: Database, id: Int) -> Option(AdminUser) {
+  case database {
+    Some(connection) ->
+      pog.query(
+        "SELECT id, email, display_name, is_active FROM admin_users WHERE id = $1 AND is_active = TRUE LIMIT 1",
+      )
+      |> pog.parameter(pog.int(id))
+      |> pog.returning(admin_user_decoder())
+      |> pog.execute(on: connection)
+      |> result.map(fn(data) { data.rows })
+      |> result.unwrap([])
+      |> list.first
+      |> option.from_result
+    None -> None
+  }
+}
+
+pub fn create_password_reset(
+  database: Database,
+  email: String,
+  token_hash: String,
+) -> Bool {
+  case database {
+    Some(connection) ->
+      pog.query(
+        "INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) SELECT id, $2, NOW() + INTERVAL '30 minutes' FROM admin_users WHERE email = $1 AND is_active = TRUE RETURNING id",
+      )
+      |> pog.parameter(pog.text(email))
+      |> pog.parameter(pog.text(token_hash))
+      |> pog.returning({
+        use id <- decode.field(0, decode.int)
+        decode.success(id)
+      })
+      |> pog.execute(on: connection)
+      |> result.map(fn(data) { list.length(data.rows) == 1 })
+      |> result.unwrap(False)
+    None -> False
+  }
+}
+
+pub fn reset_password(
+  database: Database,
+  token_hash: String,
+  password_hash: String,
+) -> Bool {
+  case database {
+    Some(connection) ->
+      pog.query(
+        "WITH valid AS (DELETE FROM password_reset_tokens WHERE token_hash = $1 AND expires_at > NOW() AND used_at IS NULL RETURNING user_id) UPDATE admin_users SET password_hash = $2 WHERE id IN (SELECT user_id FROM valid) RETURNING id",
+      )
+      |> pog.parameter(pog.text(token_hash))
+      |> pog.parameter(pog.text(password_hash))
+      |> pog.returning({
+        use id <- decode.field(0, decode.int)
+        decode.success(id)
+      })
+      |> pog.execute(on: connection)
+      |> result.map(fn(data) { list.length(data.rows) == 1 })
+      |> result.unwrap(False)
+    None -> False
+  }
 }
 
 fn entry_decoder() {

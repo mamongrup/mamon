@@ -1,3 +1,4 @@
+import account_auth
 import gleeunit
 
 pub fn main() -> Nil {
@@ -10,4 +11,17 @@ pub fn hello_world_test() {
   let greeting = "Hello, " <> name <> "!"
 
   assert greeting == "Hello, Joe!"
+}
+
+pub fn password_hash_round_trip_test() {
+  let hash = account_auth.hash_password("GucluBirParola-2026")
+  assert account_auth.verify_password("GucluBirParola-2026", hash)
+  assert !account_auth.verify_password("yanlis-parola", hash)
+}
+
+pub fn account_validation_test() {
+  assert account_auth.valid_email("yonetim@mamon.tr")
+  assert !account_auth.valid_email("gecersiz")
+  assert account_auth.valid_password("oniki-karakter")
+  assert !account_auth.valid_password("kisa")
 }

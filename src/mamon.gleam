@@ -1,6 +1,10 @@
+import account_auth
+import account_mail
+import auth_pages
 import chat
 import cms
 import database
+import envoy
 import gleam/erlang/process
 import gleam/http.{Get, Post}
 import gleam/http/request
@@ -15,10 +19,11 @@ import mist
 import wisp
 import wisp/wisp_mist
 
-const secret = "mamon-development-secret-change-in-production-2026"
+const development_secret = "mamon-development-secret-change-in-production-2026"
 
 pub fn main() {
   let db = database.connect()
+  let secret = envoy.get("SECRET_KEY_BASE") |> result.unwrap(development_secret)
   let assert Ok(_) =
     fn(request) { handle_request(request, db) }
     |> wisp_mist.handler(secret)
@@ -38,15 +43,36 @@ pub fn handle_request(
   let admin_allowed = admin_host_allowed(req)
   case req.method, request.path_segments(req), admin_allowed {
     Get, [], _ -> wisp.html_response(home, 200)
-    Get, ["admin"], True -> wisp.html_response(admin, 200)
+    Get, ["admin", "login"], True ->
+      wisp.html_response(auth_pages.login(""), 200)
+    Post, ["admin", "login"], True -> login(req, db)
+    Get, ["admin", "register"], True ->
+      wisp.html_response(auth_pages.register(""), 200)
+    Post, ["admin", "register"], True -> register(req, db)
+    Get, ["admin", "forgot-password"], True ->
+      wisp.html_response(auth_pages.forgot(""), 200)
+    Post, ["admin", "forgot-password"], True -> forgot_password(req, db)
+    Get, ["admin", "reset-password", token], True ->
+      wisp.html_response(auth_pages.reset(token, ""), 200)
+    Post, ["admin", "reset-password"], True -> reset_password(req, db)
+    Post, ["admin", "logout"], True -> logout(req)
+    Get, ["admin"], True ->
+      protected(req, db, fn() { wisp.html_response(admin, 200) })
     Get, ["admin", "pages"], True ->
-      wisp.html_response(cms.admin_entries(db, "pages"), 200)
+      protected(req, db, fn() {
+        wisp.html_response(cms.admin_entries(db, "pages"), 200)
+      })
     Get, ["admin", "projects"], True ->
-      wisp.html_response(cms.admin_entries(db, "projects"), 200)
-    Post, ["admin", "pages"], True -> create_entry(req, db, "pages")
-    Post, ["admin", "projects"], True -> create_entry(req, db, "projects")
-    Post, ["admin", table, id, "delete"], True -> delete_entry(db, table, id)
-    Post, ["admin", "save"], True -> saved(req, db)
+      protected(req, db, fn() {
+        wisp.html_response(cms.admin_entries(db, "projects"), 200)
+      })
+    Post, ["admin", "pages"], True ->
+      protected(req, db, fn() { create_entry(req, db, "pages") })
+    Post, ["admin", "projects"], True ->
+      protected(req, db, fn() { create_entry(req, db, "projects") })
+    Post, ["admin", table, id, "delete"], True ->
+      protected(req, db, fn() { delete_entry(db, table, id) })
+    Post, ["admin", "save"], True -> protected(req, db, fn() { saved(req, db) })
     _, ["admin", ..], False ->
       wisp.html_response(
         "<main><h1>404</h1><a href='/'>Ana sayfa</a></main>",
@@ -83,6 +109,176 @@ fn admin_host_allowed(req: wisp.Request) -> Bool {
     |> list.first
     |> result.unwrap("")
   list.contains(["mamon.tr", "www.mamon.tr", "localhost", "127.0.0.1"], host)
+}
+
+fn current_admin(req: wisp.Request, db: database.Database) {
+  case wisp.get_cookie(req, "mamon_session", wisp.Signed) {
+    Ok(value) ->
+      case int.parse(value) {
+        Ok(id) -> database.find_active_admin(db, id)
+        Error(_) -> None
+      }
+    Error(_) -> None
+  }
+}
+
+fn protected(
+  req: wisp.Request,
+  db: database.Database,
+  next: fn() -> wisp.Response,
+) -> wisp.Response {
+  case current_admin(req, db) {
+    Some(_) -> next()
+    None -> wisp.redirect("/admin/login")
+  }
+}
+
+fn login(req: wisp.Request, db: database.Database) -> wisp.Response {
+  use form <- wisp.require_form(req)
+  let email =
+    list.key_find(form.values, "email")
+    |> result.unwrap("")
+    |> account_auth.normalize_email
+  let password = list.key_find(form.values, "password") |> result.unwrap("")
+  case database.find_admin_by_email(db, email) {
+    Some(#(database.AdminUser(id, _, _, True), hash)) ->
+      case account_auth.verify_password(password, hash) {
+        True ->
+          wisp.redirect("/admin")
+          |> wisp.set_cookie(
+            req,
+            "mamon_session",
+            int.to_string(id),
+            wisp.Signed,
+            60 * 60 * 8,
+          )
+        False ->
+          wisp.html_response(
+            auth_pages.login("E-posta veya parola hatalı."),
+            401,
+          )
+      }
+    _ ->
+      wisp.html_response(auth_pages.login("E-posta veya parola hatalı."), 401)
+  }
+}
+
+fn register(req: wisp.Request, db: database.Database) -> wisp.Response {
+  use form <- wisp.require_form(req)
+  let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
+  let email = get("email") |> account_auth.normalize_email
+  let password = get("password")
+  let confirm = get("password_confirm")
+  let name = get("display_name")
+  case
+    database.admin_count(db),
+    account_auth.valid_email(email),
+    account_auth.valid_password(password),
+    password == confirm
+  {
+    0, True, True, True ->
+      case
+        database.create_admin(
+          db,
+          email,
+          account_auth.hash_password(password),
+          name,
+          True,
+        )
+      {
+        True ->
+          wisp.html_response(
+            auth_pages.login(
+              "Hesabınız oluşturuldu. Şimdi giriş yapabilirsiniz.",
+            ),
+            201,
+          )
+        False ->
+          wisp.html_response(auth_pages.register("Hesap oluşturulamadı."), 400)
+      }
+    count, _, _, _ if count > 0 ->
+      wisp.html_response(
+        auth_pages.register(
+          "Açık kayıt kapalıdır. Yeni kullanıcı için mevcut yöneticiyle iletişime geçin.",
+        ),
+        403,
+      )
+    _, _, False, _ ->
+      wisp.html_response(
+        auth_pages.register("Parola en az 12 karakter olmalıdır."),
+        400,
+      )
+    _, _, _, False ->
+      wisp.html_response(auth_pages.register("Parolalar eşleşmiyor."), 400)
+    _, _, _, _ ->
+      wisp.html_response(auth_pages.register("Bilgileri kontrol edin."), 400)
+  }
+}
+
+fn forgot_password(req: wisp.Request, db: database.Database) -> wisp.Response {
+  use form <- wisp.require_form(req)
+  let email =
+    list.key_find(form.values, "email")
+    |> result.unwrap("")
+    |> account_auth.normalize_email
+  let token = account_auth.random_token()
+  let created =
+    database.create_password_reset(db, email, account_auth.token_digest(token))
+  let _ = case created {
+    True ->
+      account_mail.send_reset(
+        email,
+        "https://mamon.tr/admin/reset-password/" <> token,
+      )
+    False -> False
+  }
+  wisp.html_response(
+    auth_pages.forgot(
+      "Hesap mevcutsa parola yenileme bağlantısı e-posta adresinize gönderildi.",
+    ),
+    200,
+  )
+}
+
+fn reset_password(req: wisp.Request, db: database.Database) -> wisp.Response {
+  use form <- wisp.require_form(req)
+  let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
+  let token = get("token")
+  let password = get("password")
+  let confirm = get("password_confirm")
+  case account_auth.valid_password(password), password == confirm {
+    True, True ->
+      case
+        database.reset_password(
+          db,
+          account_auth.token_digest(token),
+          account_auth.hash_password(password),
+        )
+      {
+        True ->
+          wisp.html_response(
+            auth_pages.login("Parolanız güncellendi. Giriş yapabilirsiniz."),
+            200,
+          )
+        False ->
+          wisp.html_response(
+            auth_pages.reset(token, "Bağlantı geçersiz veya süresi dolmuş."),
+            400,
+          )
+      }
+    False, _ ->
+      wisp.html_response(
+        auth_pages.reset(token, "Parola en az 12 karakter olmalıdır."),
+        400,
+      )
+    _, False ->
+      wisp.html_response(auth_pages.reset(token, "Parolalar eşleşmiyor."), 400)
+  }
+}
+
+fn logout(req: wisp.Request) -> wisp.Response {
+  wisp.redirect("/admin/login")
+  |> wisp.set_cookie(req, "mamon_session", "", wisp.Signed, 0)
 }
 
 fn show_entry(db, table, kind, slug) {
@@ -185,7 +381,7 @@ fn saved(req, db) {
   }
 }
 
-const head = "<meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='icon' type='image/png' href='/favicon.png'><link rel='apple-touch-icon' href='/favicon.png'><link rel='manifest' href='/site.webmanifest'><meta name='theme-color' content='#10273c'><link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet'><link rel='stylesheet' href='/static/styles.css'><link rel='stylesheet' href='/static/extra.css'><link rel='stylesheet' href='/static/tourism.css'><script src='https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js' defer></script>"
+const head = "<meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='icon' type='image/png' href='/favicon.png'><link rel='apple-touch-icon' href='/favicon.png'><link rel='manifest' href='/site.webmanifest'><meta name='theme-color' content='#10273c'><link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet'><link rel='stylesheet' href='/static/styles.css'><link rel='stylesheet' href='/static/admin.css'><link rel='stylesheet' href='/static/extra.css'><link rel='stylesheet' href='/static/tourism.css'><script src='https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js' defer></script>"
 
 const home = "<!doctype html><html lang='tr'><head>"
   <> head
@@ -204,4 +400,4 @@ const regions = "<div class='region-cards'><article><small>01 / AKDENİZ</small>
 
 const admin = "<!doctype html><html lang='tr'><head>"
   <> head
-  <> "<title>Mamon Yönetim</title></head><body class='admin-body'><aside><a class='brand' href='/'><i>M</i>MAMON</a><small>YÖNETİM PANELİ</small><nav><a class='active'>⌂　Genel Bakış</a><a>▤　Sayfa İçerikleri</a><a>◈　Faaliyet Alanları</a><a>✉　İletişim Talepleri <b>3</b></a><a>⚙　Ayarlar</a></nav><a class='back' href='/'>← Siteye dön</a></aside><main class='admin-main'><header><div><small>24 AĞUSTOS 2026</small><h1>Günaydın, Mamon.</h1></div><div class='user'><i>MA</i><span><b>Site Yöneticisi</b><small>Yönetici</small></span></div></header><section class='admin-stats'><article><span>TOPLAM SAYFA</span><b>6</b><small>↑ Tümü yayında</small></article><article><span>FAALİYET ALANI</span><b>3</b><small>Turizm, emlak, inşaat</small></article><article><span>YENİ TALEP</span><b>3</b><small>Son 7 gün</small></article><article><span>SON GÜNCELLEME</span><b>Bugün</b><small>10:42</small></article></section><section class='admin-grid'><div class='panel editor'><header><div><small>ANA SAYFA</small><h2>İçerik düzenleyici</h2></div><span>● YAYINDA</span></header><form hx-post='/admin/save' hx-target='#save' hx-swap='innerHTML'><label>Üst başlık<input name='eyebrow' value='2010&apos;DAN BERİ GÜVENLE'></label><label>Ana başlık<textarea name='title'>Yerelden doğan küresel vizyon.</textarea></label><label>Açıklama<textarea name='description'>Turizm, emlak ve inşaatta köklü deneyimi; teknoloji, güven ve insan odaklı hizmetle buluşturuyoruz.</textarea></label><div class='row'><label>Birincil buton<input name='cta' value='Neler yapıyoruz'></label><label>Bağlantı<input name='url' value='#alanlar'></label></div><div class='save-row'><div id='save'></div><button class='btn accent'>Değişiklikleri kaydet</button></div></form></div><div class='panel activity'><header><div><small>SON HAREKETLER</small><h2>Aktivite</h2></div></header><ul><li><i>MK</i><p><b>Ana sayfa güncellendi</b><span>M. Kaya • 18 dakika önce</span></p></li><li><i>AT</i><p><b>Yeni iletişim talebi</b><span>Ayşe Tan • 2 saat önce</span></p></li><li><i>SY</i><p><b>Turizm içeriği düzenlendi</b><span>S. Yılmaz • Dün</span></p></li></ul></div></section></main></body></html>"
+  <> "<title>Mamon Yönetim</title></head><body class='admin-body'><aside><a class='brand' href='/'><i>M</i>MAMON</a><small>YÖNETİM PANELİ</small><nav><a class='active' href='/admin'>⌂　Genel Bakış</a><a href='/admin/pages'>▤　Sayfalar</a><a href='/admin/projects'>◈　Projeler</a></nav><form class='logout-form' method='post' action='/admin/logout'><button>Oturumu kapat</button></form><a class='back' href='/'>← Siteye dön</a></aside><main class='admin-main'><header><div><small>24 AĞUSTOS 2026</small><h1>Günaydın, Mamon.</h1></div><div class='user'><i>MA</i><span><b>Site Yöneticisi</b><small>Yönetici</small></span></div></header><section class='admin-stats'><article><span>TOPLAM SAYFA</span><b>6</b><small>↑ Tümü yayında</small></article><article><span>FAALİYET ALANI</span><b>3</b><small>Turizm, emlak, inşaat</small></article><article><span>YENİ TALEP</span><b>3</b><small>Son 7 gün</small></article><article><span>SON GÜNCELLEME</span><b>Bugün</b><small>10:42</small></article></section><section class='admin-grid'><div class='panel editor'><header><div><small>ANA SAYFA</small><h2>İçerik düzenleyici</h2></div><span>● YAYINDA</span></header><form hx-post='/admin/save' hx-target='#save' hx-swap='innerHTML'><label>Üst başlık<input name='eyebrow' value='2010&apos;DAN BERİ GÜVENLE'></label><label>Ana başlık<textarea name='title'>Yerelden doğan küresel vizyon.</textarea></label><label>Açıklama<textarea name='description'>Turizm, emlak ve inşaatta köklü deneyimi; teknoloji, güven ve insan odaklı hizmetle buluşturuyoruz.</textarea></label><div class='row'><label>Birincil buton<input name='cta' value='Neler yapıyoruz'></label><label>Bağlantı<input name='url' value='#alanlar'></label></div><div class='save-row'><div id='save'></div><button class='btn accent'>Değişiklikleri kaydet</button></div></form></div><div class='panel activity'><header><div><small>SON HAREKETLER</small><h2>Aktivite</h2></div></header><ul><li><i>MK</i><p><b>Ana sayfa güncellendi</b><span>M. Kaya • 18 dakika önce</span></p></li><li><i>AT</i><p><b>Yeni iletişim talebi</b><span>Ayşe Tan • 2 saat önce</span></p></li><li><i>SY</i><p><b>Turizm içeriği düzenlendi</b><span>S. Yılmaz • Dün</span></p></li></ul></div></section></main></body></html>"

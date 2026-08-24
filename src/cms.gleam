@@ -75,7 +75,7 @@ pub fn admin_entries(database: Database, table: String) -> String {
     |> string.join("")
   "<!doctype html><html lang='tr'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Mamon Yönetim — "
   <> label
-  <> "</title><link rel='stylesheet' href='/static/styles.css'><script src='https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js' defer></script></head><body class='admin-body'><aside><a class='brand' href='/'><i>M</i>MAMON</a><small>YÖNETİM PANELİ</small><nav><a href='/admin'>⌂ Genel Bakış</a><a href='/admin/pages'>▤ Sayfalar</a><a href='/admin/projects'>◈ Projeler</a></nav><a class='back' href='/'>← Siteye dön</a></aside><main class='admin-main'><header><div><small>İÇERİK YÖNETİMİ</small><h1>"
+  <> "</title><link rel='stylesheet' href='/static/styles.css'><link rel='stylesheet' href='/static/admin.css'><script src='https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js' defer></script></head><body class='admin-body'><aside><a class='brand' href='/'><i>M</i>MAMON</a><small>YÖNETİM PANELİ</small><nav><a href='/admin'>⌂ Genel Bakış</a><a href='/admin/pages'>▤ Sayfalar</a><a href='/admin/projects'>◈ Projeler</a></nav><form class='logout-form' method='post' action='/admin/logout'><button>Oturumu kapat</button></form><a class='back' href='/'>← Siteye dön</a></aside><main class='admin-main'><header><div><small>İÇERİK YÖNETİMİ</small><h1>"
   <> label
   <> "</h1></div></header><section class='admin-grid cms-grid'><div class='panel'><header><div><small>YAYINDAKİ KAYITLAR</small><h2>"
   <> label
