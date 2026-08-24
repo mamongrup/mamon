@@ -1,9 +1,14 @@
+import chat
+import cms
 import database
 import gleam/erlang/process
 import gleam/http.{Get, Post}
 import gleam/http/request
+import gleam/http/response
+import gleam/int
 import gleam/io
 import gleam/list
+import gleam/option.{None, Some}
 import gleam/result
 import mist
 import wisp
@@ -32,8 +37,27 @@ pub fn handle_request(
   case req.method, request.path_segments(req) {
     Get, [] -> wisp.html_response(home, 200)
     Get, ["admin"] -> wisp.html_response(admin, 200)
+    Get, ["admin", "pages"] ->
+      wisp.html_response(cms.admin_entries(db, "pages"), 200)
+    Get, ["admin", "projects"] ->
+      wisp.html_response(cms.admin_entries(db, "projects"), 200)
+    Post, ["admin", "pages"] -> create_entry(req, db, "pages")
+    Post, ["admin", "projects"] -> create_entry(req, db, "projects")
+    Post, ["admin", table, id, "delete"] -> delete_entry(db, table, id)
+    Get, ["sayfa", slug] -> show_entry(db, "pages", "sayfa", slug)
+    Get, ["projeler", slug] -> show_entry(db, "projects", "projeler", slug)
+    Get, ["sitemap.xml"] ->
+      wisp.html_response(cms.sitemap(db), 200)
+      |> response.set_header("content-type", "application/xml; charset=utf-8")
+    Get, ["robots.txt"] ->
+      wisp.html_response(
+        "User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: https://mamon.tr/sitemap.xml\n",
+        200,
+      )
+      |> response.set_header("content-type", "text/plain; charset=utf-8")
     Get, ["hx", "regions"] -> wisp.html_response(regions, 200)
     Post, ["hx", "contact"] -> message(req, db)
+    Post, ["hx", "chat"] -> chat_message(req)
     Post, ["admin", "save"] -> saved(req, db)
     _, _ ->
       wisp.html_response(
@@ -41,6 +65,60 @@ pub fn handle_request(
         404,
       )
   }
+}
+
+fn show_entry(db, table, kind, slug) {
+  case database.find_entry(db, table, slug) {
+    Some(entry) -> wisp.html_response(cms.entry_page(entry, kind), 200)
+    None ->
+      wisp.html_response(
+        "<main><h1>İçerik bulunamadı</h1><a href='/'>Ana sayfa</a></main>",
+        404,
+      )
+  }
+}
+
+fn create_entry(req, db, table) {
+  use form <- wisp.require_form(req)
+  let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
+  let _ =
+    database.create_entry(
+      db,
+      table,
+      get("title"),
+      get("slug"),
+      get("summary"),
+      get("body"),
+      get("seo_title"),
+      get("seo_description"),
+    )
+  wisp.html_response(cms.admin_entries(db, table), 200)
+}
+
+fn delete_entry(db, table, id) {
+  case int.parse(id) {
+    Ok(id) -> {
+      let _ = database.delete_entry(db, table, id)
+      wisp.html_response("", 200)
+    }
+    Error(_) -> wisp.html_response("Geçersiz kayıt", 400)
+  }
+}
+
+fn chat_message(req) {
+  use form <- wisp.require_form(req)
+  let question = list.key_find(form.values, "message") |> result.unwrap("")
+  let answer =
+    chat.ask(question)
+    |> result.unwrap(
+      "Şu anda yanıt veremiyorum. Lütfen iletişim formunu kullanın.",
+    )
+  wisp.html_response(
+    "<div class='chat-answer'><b>Mamon Asistan</b><p>"
+      <> cms.escape(answer)
+      <> "</p></div>",
+    200,
+  )
 }
 
 fn message(req, db) {
@@ -89,11 +167,11 @@ fn saved(req, db) {
   }
 }
 
-const head = "<meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet'><link rel='stylesheet' href='/static/styles.css'><script src='https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js' defer></script>"
+const head = "<meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet'><link rel='stylesheet' href='/static/styles.css'><link rel='stylesheet' href='/static/extra.css'><script src='https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js' defer></script>"
 
 const home = "<!doctype html><html lang='tr'><head>"
   <> head
-  <> "<title>Mamon | Turizm, Emlak & İnşaat</title><meta name='description' content='2010’dan bu yana turizm, emlak ve inşaatta güvenilir çözümler.'></head><body>
+  <> "<title>Mamon | Turizm, Emlak ve İnşaat</title><meta name='description' content='Mamon, 2010’dan bu yana Antalya ve Muğla’da emlak ve inşaat, dünya genelinde turizm çözümleri sunar.'><link rel='canonical' href='https://mamon.tr/'><meta name='robots' content='index,follow,max-image-preview:large'><meta property='og:type' content='website'><meta property='og:locale' content='tr_TR'><meta property='og:site_name' content='Mamon'><meta property='og:title' content='Mamon | Turizm, Emlak ve İnşaat'><meta property='og:description' content='Yerelden doğan küresel vizyon. 2010’dan beri turizm, emlak ve inşaat.'><meta property='og:url' content='https://mamon.tr/'><meta name='twitter:card' content='summary_large_image'><script type='application/ld+json'>{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"name\":\"Mamon\",\"url\":\"https://mamon.tr\",\"foundingDate\":\"2010\",\"areaServed\":\"Worldwide\",\"knowsAbout\":[\"Tourism\",\"Real Estate\",\"Construction\"]}</script></head><body>
 <header class='top'><a class='brand' href='/'><i>M</i>MAMON</a><nav><a href='#about'>Hakkımızda</a><a href='#work'>Faaliyet Alanları</a><a href='#nexus'>Nexus</a><a href='#contact'>İletişim</a></nav><a class='top-cta' href='#contact'>Bizimle konuşun ↗</a></header>
 <main><section class='hero'><div class='hero-copy'><label>— 2010'DAN BERİ GÜVENLE</label><h1>Yerelden doğan<br><em>küresel</em> vizyon.</h1><p>Turizm, emlak ve inşaatta köklü deneyimi; teknoloji, güven ve insan odaklı hizmetle buluşturuyoruz.</p><div class='actions'><a class='btn light' href='#work'>Neler yapıyoruz ↓</a><a href='#about'>Hikâyemizi keşfedin →</a></div></div><div class='scene'><div class='sun'></div><div class='arch'></div><small>36.8969° N<br>30.7133° E</small></div><div class='stats'><div><b>15+</b><span>Yıllık deneyim</span></div><div><b>3</b><span>Uzmanlık alanı</span></div><div><b>∞</b><span>Küresel erişim</span></div></div></section>
 <section class='about' id='about'><div class='kicker'>01 — BİZ KİMİZ</div><div><h2>Akdeniz'in enerjisini<br><em>dünyaya taşıyoruz.</em></h2><p>2010 yılında çıktığımız yolda farklı sektörlerde aynı ilkeye sadık kaldık: kalıcı değer üretmek. Antalya ve Muğla'da emlak ve inşaat, dünya genelinde turizm faaliyetlerimizle güvenilir iş ortaklıkları kuruyoruz.</p><a class='under' href='#contact'>Mamon'u yakından tanıyın ↗</a></div><div class='orbit'><small>EST.</small><b>2010</b><small>ANTALYA • TÜRKİYE</small></div></section>
@@ -101,7 +179,7 @@ const home = "<!doctype html><html lang='tr'><head>"
 <section class='region'><div><span class='kicker'>03 — BÖLGESEL UZMANLIK</span><h2>İki şehir,<br>sayısız olasılık.</h2><p>Akdeniz ve Ege'nin en değerli bölgelerinde yerel bilgimiz, güçlü saha ağımız ve yatırım odağımızla yanınızdayız.</p><button class='btn dark' hx-get='/hx/regions' hx-target='#map' hx-swap='innerHTML'>Bölgeleri keşfedin ＋</button></div><div class='map' id='map'><div class='dot ant'><b>ANTALYA</b><small>Akdeniz</small></div><div class='dot mug'><b>MUĞLA</b><small>Ege</small></div></div></section>
 <section class='nexus' id='nexus'><div><label>STRATEJİK PARTNERLİK</label><div class='nexus-logo'><i>N</i><b>NEXUS<br><small>TRAVEL TECH</small></b></div><h2>Turizmin bilgisi,<br><em>teknolojinin gücü.</em></h2><p>Nexus Travel Tech partnerliğiyle turizm sektörüne yönelik kapsamlı bir bilgi ağı geliştiriyoruz. Veriyi, deneyimi ve doğru bağlantıları tek bir ekosistemde buluşturuyoruz.</p><div class='features'><span>01　Akıllı bilgi ağı</span><span>02　Küresel bağlantılar</span><span>03　Sektörel içgörü</span></div></div><div class='network'><b>N</b><i></i><i></i><i></i><i></i></div></section>
 <section class='contact' id='contact'><div><span class='kicker'>04 — İLETİŞİM</span><h2>Birlikte değer<br><em>üretelim.</em></h2><p>Yeni bir yatırım, proje veya iş ortaklığı için ekibimizle iletişime geçin.</p><div class='meta'><span><small>E-POSTA</small>hello@mamon.com.tr</span><span><small>MERKEZ</small>Antalya, Türkiye</span></div></div><form hx-post='/hx/contact' hx-target='this' hx-swap='innerHTML'><label>Adınız Soyadınız<input required name='name' placeholder='Adınız ve soyadınız'></label><label>E-posta adresiniz<input required type='email' name='email' placeholder='ornek@firma.com'></label><label>İlgilendiğiniz alan<select name='area'><option>Turizm</option><option>Emlak</option><option>İnşaat</option><option>İş ortaklığı</option></select></label><label>Mesajınız<textarea required name='message' placeholder='Size nasıl yardımcı olabiliriz?'></textarea></label><button class='btn accent'>Mesajı gönder ↗</button></form></section></main>
-<footer><a class='brand' href='/'><i>M</i>MAMON</a><p>Turizm • Emlak • İnşaat</p><div><a href='#'>LinkedIn</a><a href='#'>Instagram</a><a href='/admin'>Yönetim</a></div><small>© 2026 Mamon. Tüm hakları saklıdır.</small></footer></body></html>"
+<footer><a class='brand' href='/'><i>M</i>MAMON</a><p>Turizm • Emlak • İnşaat</p><div><a href='#'>LinkedIn</a><a href='#'>Instagram</a><a href='/admin'>Yönetim</a></div><small>© 2026 Mamon. Tüm hakları saklıdır.</small></footer><details class='chatbox'><summary><span>✦</span> Mamon Asistan</summary><div class='chat-window'><div class='chat-intro'><b>Size nasıl yardımcı olabilirim?</b><p>Turizm, emlak ve projelerimiz hakkında sorun.</p></div><div id='chat-result'></div><form hx-post='/hx/chat' hx-target='#chat-result' hx-swap='beforeend' hx-on::after-request='this.reset()'><input name='message' required maxlength='600' placeholder='Mesajınızı yazın…'><button aria-label='Gönder'>↑</button></form></div></details></body></html>"
 
 const regions = "<div class='region-cards'><article><small>01 / AKDENİZ</small><h3>Antalya</h3><p>Şehir merkezinden kıyı bölgelerine uzanan emlak ve inşaat uzmanlığı.</p></article><article><small>02 / EGE</small><h3>Muğla</h3><p>Bodrum, Fethiye ve çevresinde seçkin yatırım fırsatları.</p></article></div>"
 

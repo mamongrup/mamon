@@ -18,6 +18,17 @@ DATABASE_URL=postgresql://mamon_user:parola@127.0.0.1:5432/mamon?sslmode=disable
 Üretimde doğrulanmış TLS için bağlantı adresinde `sslmode=verify-full`
 kullanılmalıdır. Şema ayrıca `sql/001_initial.sql` içinde tutulur.
 
+## İçerik ve yapay zekâ
+
+- `/admin/pages`: SEO alanlarıyla sayfa oluşturma ve silme
+- `/admin/projects`: proje oluşturma ve silme
+- `/sitemap.xml`: veritabanındaki yayınlara göre otomatik sitemap
+- `/robots.txt`: arama motoru ve yönetim paneli kuralları
+- `DEEPSEEK_API_KEY`: Mamon Asistan sohbet kutusunun sunucu anahtarı
+
+DeepSeek anahtarı yalnızca sunucu ortamında tutulmalı, istemci koduna veya
+Git deposuna yazılmamalıdır.
+
 ## Development
 
 ```sh
