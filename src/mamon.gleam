@@ -33,6 +33,7 @@ pub fn main() {
       panic as "SECRET_KEY_BASE gerekli"
     }
   }
+  let _ = seed_content(db)
   let assert Ok(_) =
     fn(request) { handle_request(request, db) }
     |> wisp_mist.handler(secret)
@@ -41,6 +42,76 @@ pub fn main() {
     |> mist.start
   io.println("Mamon http://localhost:8000 adresinde çalışıyor")
   process.sleep_forever()
+}
+
+fn seed_content(db: database.Database) -> Bool {
+  let _ =
+    database.seed_page(
+      db,
+      "Turizm",
+      "turizm",
+      "TÜRSAB 13127 belgeli Mamon seyahat acentesi, yerli ve yabancı turistlere Türkiye genelinde hizmet verir.",
+      "<div class='content-grid'><div><span class='section-no'>TÜRSAB BELGE NO</span><h2>13127</h2></div><div><h2>Yerli deneyim, uluslararası hizmet.</h2><p>TÜRSAB üyesi seyahat acentemiz, Türkiye'nin doğal ve kültürel zenginliğini yerli ve yabancı misafirlerle buluşturur. Doğru seçenekler, şeffaf iletişim ve güçlü tedarik ağımızla seyahatin her aşamasında güvenilir bir çözüm ortağıyız.</p><p>Yurt içi misafirlerimize <strong>Rezervasyon Yap</strong>, dünyanın farklı ülkelerinden gelen konuklarımıza <strong>Reservation in Turkey</strong> markalarımızla hizmet veriyoruz.</p><div class='facts'><div class='fact'><b>13127</b><small>TÜRSAB BELGE NO</small></div><div class='fact'><b>Yerli</b><small>TÜRKİYE PAZARI</small></div><div class='fact'><b>Global</b><small>ULUSLARARASI MİSAFİRLER</small></div></div></div></div><div class='cards-list'><article class='info-card'><h3>Otel ve tatil</h3><p>Farklı beklenti ve bütçelere uygun konaklama seçenekleri.</p></article><article class='info-card'><h3>Tur ve deneyim</h3><p>Türkiye'nin kültürünü ve doğasını yakından tanıtan rotalar.</p></article><article class='info-card'><h3>Misafir desteği</h3><p>Rezervasyon öncesinden dönüşe kadar ulaşılabilir hizmet.</p></article></div><section class='cta'><h2>Seyahatinizi birlikte planlayalım.</h2><div><a class='button outline' href='https://www.rezervasyonyap.com.tr'>Rezervasyon Yap ↗</a> <a class='button outline' href='https://www.reservastioninturkey.com'>Reservation in Turkey ↗</a></div></section>",
+      "Turizm | Mamon",
+      "TÜRSAB 13127 belgeli Mamon seyahat acentesi, yerli ve yabancı turistlere Türkiye genelinde hizmet verir.",
+      "turizm",
+    )
+  let _ =
+    database.seed_page(
+      db,
+      "Emlak",
+      "emlak",
+      "Mamon Estate ile Antalya ve Muğla'da güvenilir gayrimenkul yatırım ve satış danışmanlığı.",
+      "<div class='content-grid'><div><span class='section-no'>BÖLGESEL UZMANLIK</span><h2>Antalya<br>& Muğla</h2></div><div><h2>Gayrimenkulde güven, bilgiden doğar.</h2><p><strong>Mamon Estate</strong>, yaşam ve yatırım hedeflerinize uygun gayrimenkul fırsatlarını yerel uzmanlıkla buluşturur. Her gayrimenkul kararının farklı bir amacı olduğuna inanıyoruz.</p><div class='cards-list'><article class='info-card'><h3>Yatırım danışmanlığı</h3><p>Veriye ve bölgesel gelişime dayalı fırsat analizi.</p></article><article class='info-card'><h3>Satış ve portföy</h3><p>Nitelikli gayrimenkuller için güvenilir süreç yönetimi.</p></article><article class='info-card'><h3>Arsa geliştirme</h3><p>Potansiyeli doğru okuyan proje ve fizibilite yaklaşımı.</p></article></div></div></div></div><section class='partner'><div class='partner-badge'><small>GAYRİMENKUL MARKAMIZ</small><b>Mamon Estate</b></div><div><h2>Seçkin portföyü keşfedin.</h2><p>Satılık ve yatırım amaçlı güncel gayrimenkul seçenekleri için Mamon Estate web sitesini ziyaret edin.</p><a class='button copper' href='https://mamonestate.com' target='_blank' rel='noopener'>mamonestate.com ↗</a></div></section><section class='cta'><h2>Gayrimenkul hedefinizi konuşalım.</h2><a class='button outline' href='https://mamonestate.com' target='_blank' rel='noopener'>Mamon Estate'i ziyaret edin ↗</a></section>",
+      "Emlak | Mamon Estate",
+      "Mamon Estate ile Antalya ve Muğla'da güvenilir gayrimenkul yatırım ve satış danışmanlığı.",
+      "emlak",
+    )
+  let _ =
+    database.seed_page(
+      db,
+      "İnşaat",
+      "insaat",
+      "Mamon İnşaat, Antalya ve Muğla'da yalnızca yatay mimari alanında uzmanlaşmış nitelikli yaşam projeleri geliştirir.",
+      "<div class='content-grid'><div><span class='section-no'>PROJE YAKLAŞIMI</span><h2>Fikirden<br>yaşama.</h2></div><div><h2>Uzmanlığımız yalnızca yatay mimari.</h2><p>Mamon İnşaat olarak dikey yapılaşma projeleri geliştirmiyor; tüm bilgi birikimimizi yatay mimariye odaklıyoruz.</p><p>Doğru arsa seçiminden tasarıma, uygulamadan teslim sonrasına kadar bütüncül bir proje yönetimi benimsiyoruz.</p><div class='cards-list'><article class='info-card'><h3>Proje geliştirme</h3><p>Doğru ihtiyaç, doğru konsept ve sağlam fizibilite.</p></article><article class='info-card'><h3>Uygulama</h3><p>Kalite, zaman ve bütçe dengesini koruyan saha yönetimi.</p></article><article class='info-card'><h3>Yatay yaşam</h3><p>İnsan ölçeğini, mahremiyeti ve açık alanlarla güçlü bağı koruyan projeler.</p></article></div></div></div></div><section class='partner'><div class='partner-badge'><small>TEK UZMANLIK ALANIMIZ</small><b>Yatay Mimari</b></div><div><h2>Odağımız net, uzmanlığımız derin.</h2><p>Yatay mimari dışındaki yapı modellerinde çalışma yapmıyoruz.</p></div></section><section class='cta'><h2>Yatay mimari projenizi birlikte geliştirelim.</h2><a class='button outline' href='mailto:info@mamon.com.tr'>Bize ulaşın ↗</a></section>",
+      "İnşaat | Mamon",
+      "Mamon İnşaat, Antalya ve Muğla'da yalnızca yatay mimari alanında uzmanlaşmış nitelikli yaşam projeleri geliştirir.",
+      "insaat",
+    )
+  let _ =
+    database.seed_page(
+      db,
+      "Kurumsal",
+      "kurumsal",
+      "Mamon, 2010'dan beri turizm, emlak ve inşaat alanlarında faaliyet gösteren Antalya merkezli bir şirketler grubudur.",
+      "<div class='content-grid'><div><span class='section-no'>HAKKIMIZDA</span><h2>Birlikte daha ileriye.</h2></div><div><p>Mamon'un yolculuğu 2010 yılında, kalıcı ve güvenilir işler üretme hedefiyle başladı. Bugün turizmde dünya genelinde, emlak ve inşaatta Antalya ile Muğla'da faaliyet gösteriyoruz.</p><p>Farklı uzmanlık alanlarımızı tek bir kurumsal anlayış etrafında buluşturuyoruz: sözünü tutmak, şeffaf olmak, kaliteyi ayrıntılarda aramak ve kurduğumuz her ilişkiye uzun vadeli bakmak.</p><div class='facts'><div class='fact'><b>2010</b><small>KURULUŞ</small></div><div class='fact'><b>3</b><small>FAALİYET ALANI</small></div><div class='fact'><b>2+ ülke</b><small>KÜRESEL ERİŞİM</small></div></div></div></div></div><section class='partner'><div class='partner-badge'><small>DEĞERLERİMİZ</small><b>Güven</b></div><div><h2>İşimizin merkezinde insan var.</h2><p>Misafirlerimiz, yatırımcılarımız, iş ortaklarımız ve ekip arkadaşlarımızla kurduğumuz ilişkilerde açıklığı ve karşılıklı güveni esas alıyoruz.</p></div></section>",
+      "Kurumsal | Mamon",
+      "Mamon, 2010'dan beri turizm, emlak ve inşaat alanlarında faaliyet gösteren bir şirketler grubudur.",
+      "kurumsal",
+    )
+  let _ =
+    database.seed_page(
+      db,
+      "İletişim",
+      "iletisim",
+      "Mamon ile turizm, emlak, yatay mimari ve iş ortaklığı projeleriniz hakkında iletişime geçin.",
+      "<div class='content-grid'><div><span class='section-no'>BİZE ULAŞIN</span><h2>Doğru sorular,<br>iyi başlangıçlar.</h2></div><div><div class='contact-item'><small>E-POSTA</small><a href='mailto:info@mamon.com.tr'>info@mamon.com.tr</a></div><div class='contact-item'><small>TELEFON</small><a href='tel:+905323977957'>0532 397 7957</a></div><div class='contact-item'><small>WHATSAPP</small><a href='https://wa.me/905323977957' target='_blank' rel='noopener'>WhatsApp üzerinden yazın ↗</a></div><div class='contact-item'><small>MERKEZ OFİS</small><span>Kesikkapı Mah. Çarşı Cd. No:254</span><p>Fethiye / Muğla, Türkiye</p></div><div class='contact-item'><small>ÇALIŞMA ALANLARI</small><span>Turizm · Emlak · Yatay Mimari</span></div></div></div></div>",
+      "İletişim | Mamon",
+      "Mamon ile turizm, emlak, yatay mimari ve iş ortaklığı projeleriniz hakkında iletişime geçin.",
+      "iletisim",
+    )
+  let _ =
+    database.seed_page(
+      db,
+      "English",
+      "en",
+      "Mamon has created lasting value in tourism, real estate and construction since 2010.",
+      "<section class='hero-corp'><div class='hero-main'><span class='overline'>TRUSTED SINCE 2010</span><h1>Deep experience.<br><em>Lasting value.</em></h1><p>We combine local expertise with an international perspective across tourism, real estate and construction.</p><div class='hero-buttons'><a class='button copper' href='/en/#about'>Discover Mamon →</a><a class='button outline' href='mailto:info@mamon.com.tr'>Contact us ↗</a></div></div></section><section class='trustbar'><div><small>FOUNDED</small><strong>2010</strong></div><div><small>EXPERTISE</small><strong>3 business areas</strong></div><div><small>TOURISM</small><strong>TÜRSAB 13127</strong></div><div><small>REACH</small><strong>Türkiye & worldwide</strong></div></section><section class='intro-corp' id='about'><div><span class='section-no'>01 — MAMON</span></div><div><h2>Different industries.<br>One standard of trust.</h2><p>Based in Antalya, Mamon serves domestic and international travellers, supports real estate investments in Antalya and Muğla, and develops high-quality construction projects designed for lasting value.</p></div></section><section class='divisions'><div class='division-grid'><article class='division'><span>01</span><h3>Tourism</h3><p>Reliable travel services for domestic and international guests through our TÜRSAB-certified agency.</p><a href='/turizm/'>DISCOVER TOURISM →</a></article><article class='division'><span>02</span><h3>Real Estate</h3><p>Local knowledge and transparent investment guidance across Antalya and Muğla.</p><a href='/emlak/'>DISCOVER REAL ESTATE →</a></article><article class='division'><span>03</span><h3>Construction</h3><p>Functional, refined and sustainable spaces created for modern life.</p><a href='/insaat/'>DISCOVER CONSTRUCTION →</a></article></div></section>",
+      "Mamon | Tourism, Real Estate & Construction",
+      "Mamon has created lasting value in tourism, real estate and construction since 2010.",
+      "en",
+    )
+  True
 }
 
 pub fn handle_request(
@@ -91,7 +162,18 @@ fn handle_route(
 ) -> wisp.Response {
   let admin_allowed = admin_host_allowed(req)
   case req.method, request.path_segments(req), admin_allowed {
-    Get, [], _ -> wisp.html_response(home_page(csrf_token), 200)
+    // --- Public CMS pages ---
+    Get, [], _ -> render_cms_page(db, "anasayfa", "anasayfa")
+    Get, ["turizm"], _ -> render_cms_page(db, "turizm", "turizm")
+    Get, ["emlak"], _ -> render_cms_page(db, "emlak", "emlak")
+    Get, ["insaat"], _ -> render_cms_page(db, "insaat", "insaat")
+    Get, ["kurumsal"], _ -> render_cms_page(db, "kurumsal", "kurumsal")
+    Get, ["iletisim"], _ -> render_cms_page(db, "iletisim", "iletisim")
+    Get, ["en"], _ -> render_cms_page(db, "en", "en")
+    Get, ["sayfa", slug], _ -> show_entry(db, "pages", "sayfa", slug)
+    Get, ["projeler", slug], _ -> show_entry(db, "projects", "projeler", slug)
+
+    // --- Admin auth ---
     Get, ["admin", "login"], True ->
       wisp.html_response(auth_pages.login(csrf_token, ""), 200)
     Post, ["admin", "login"], True -> login(req, db, csrf_token)
@@ -100,41 +182,64 @@ fn handle_route(
     Post, ["admin", "register"], True -> register(req, db, csrf_token)
     Get, ["admin", "forgot-password"], True ->
       wisp.html_response(auth_pages.forgot(csrf_token, ""), 200)
-    Post, ["admin", "forgot-password"], True ->
-      forgot_password(req, db, csrf_token)
+    Post, ["admin", "forgot-password"], True -> forgot_password(req, db, csrf_token)
     Get, ["admin", "reset-password", token], True ->
       wisp.html_response(auth_pages.reset(csrf_token, token, ""), 200)
-    Post, ["admin", "reset-password"], True ->
-      reset_password(req, db, csrf_token)
+    Post, ["admin", "reset-password"], True -> reset_password(req, db, csrf_token)
     Post, ["admin", "logout"], True -> logout(req, csrf_token)
+
+    // --- Admin dashboard & CMS ---
     Get, ["admin"], True ->
       protected(req, db, fn() {
-        wisp.html_response(admin_page(csrf_token), 200)
+        wisp.html_response(admin_dashboard(csrf_token, db), 200)
       })
     Get, ["admin", "pages"], True ->
       protected(req, db, fn() {
         wisp.html_response(cms.admin_entries(csrf_token, db, "pages"), 200)
       })
+    Get, ["admin", "pages", id_str], True ->
+      protected(req, db, fn() {
+        case int.parse(id_str) {
+          Ok(id) -> wisp.html_response(cms.admin_edit_page(csrf_token, db, "pages", id), 200)
+          Error(_) -> wisp.html_response("Geçersiz ID", 400)
+        }
+      })
     Get, ["admin", "projects"], True ->
       protected(req, db, fn() {
         wisp.html_response(cms.admin_entries(csrf_token, db, "projects"), 200)
       })
+    Get, ["admin", "projects", id_str], True ->
+      protected(req, db, fn() {
+        case int.parse(id_str) {
+          Ok(id) -> wisp.html_response(cms.admin_edit_page(csrf_token, db, "projects", id), 200)
+          Error(_) -> wisp.html_response("Geçersiz ID", 400)
+        }
+      })
     Post, ["admin", "pages"], True ->
-      protected(req, db, fn() { create_entry(req, db, "pages") })
+      protected(req, db, fn() { create_page(req, db) })
     Post, ["admin", "projects"], True ->
       protected(req, db, fn() { create_entry(req, db, "projects") })
+    Post, ["admin", "pages", id_str, "update"], True ->
+      protected(req, db, fn() { update_page(req, db, id_str) })
+    Post, ["admin", "projects", id_str, "update"], True ->
+      protected(req, db, fn() { update_entry(req, db, "projects", id_str) })
     Post, ["admin", table, id, "delete"], True ->
       protected(req, db, fn() { delete_entry(db, table, id) })
     Post, ["admin", "save"], True ->
       protected(req, db, fn() { saved(req, db) })
+
     _, ["admin", ..], False ->
       wisp.html_response(
         "<main><h1>404</h1><a href='/'>Ana sayfa</a></main>",
         404,
       )
-    Get, ["sayfa", slug], _ -> show_entry(db, "pages", "sayfa", slug)
-    Get, ["projeler", slug], _ ->
-      show_entry(db, "projects", "projeler", slug)
+
+    // --- HTMX ---
+    Get, ["hx", "regions"], _ -> wisp.html_response(regions, 200)
+    Post, ["hx", "contact"], _ -> message(req, db, csrf_token)
+    Post, ["hx", "chat"], _ -> chat_message(req, csrf_token)
+
+    // --- Static files ---
     Get, ["sitemap.xml"], _ ->
       wisp.html_response(cms.sitemap(db), 200)
       |> response.set_header("content-type", "application/xml; charset=utf-8")
@@ -144,12 +249,36 @@ fn handle_route(
         200,
       )
       |> response.set_header("content-type", "text/plain; charset=utf-8")
-    Get, ["hx", "regions"], _ -> wisp.html_response(regions, 200)
-    Post, ["hx", "contact"], _ -> message(req, db, csrf_token)
-    Post, ["hx", "chat"], _ -> chat_message(req, csrf_token)
+
     _, _, _ ->
       wisp.html_response(
         "<main><h1>404</h1><a href='/'>Ana sayfa</a></main>",
+        404,
+      )
+  }
+}
+
+fn render_cms_page(db: database.Database, category: String, kind: String) -> wisp.Response {
+  let pages = database.list_entries_by_category(db, category)
+  case list.first(pages) {
+    Ok(entry) -> {
+      let nav_footer = case kind {
+        "en" -> #(
+          "<header class='header'><a class='logo' href='/en/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><nav class='nav'><a href='/en/'>Home</a><a href='/en/#about'>Corporate</a><a href='/turizm/'>Tourism</a><a href='/emlak/'>Real Estate</a><a href='/insaat/'>Construction</a><a href='/projeler/'>Projects</a><a href='/iletisim/'>İletişim</a><a class='language' href='/'>TR</a></nav></header>",
+          "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/en/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><p>Tourism • Real Estate • Construction</p></div><div><h4>LANGUAGE</h4><nav><a href='/'>Türkçe</a><a href='/en/'>English</a></nav></div><div><h4>CONTACT</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon</div></footer>",
+        )
+        _ -> #(
+          "<header class='header'><a class='logo' href='/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><nav class='nav'><a href='/'>Ana Sayfa</a><a href='/kurumsal/'>Kurumsal</a><a href='/turizm/'>Turizm</a><a href='/emlak/'>Emlak</a><a href='/insaat/'>İnşaat</a><a href='/projeler/'>Projeler</a><a href='/iletisim/'>İletişim</a><a class='language' href='/en/'>EN</a></nav></header>",
+          "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><p>Turizm, emlak ve inşaatta köklü deneyim; güvenilir ortaklıklar.</p></div><div><h4>KURUMSAL</h4><nav><a href='/kurumsal/'>Hakkımızda</a><a href='/projeler/'>Projeler</a></nav></div><div><h4>FAALİYETLER</h4><nav><a href='/turizm/'>Turizm</a><a href='/emlak/'>Emlak</a><a href='/insaat/'>İnşaat</a></nav></div><div><h4>İLETİŞİM</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon. Tüm hakları saklıdır.</div></footer>",
+        )
+      }
+      let nav_html = nav_footer.0
+      let footer_html = nav_footer.1
+      wisp.html_response(cms.page_template(entry, nav_html, footer_html), 200)
+    }
+    Error(_) ->
+      wisp.html_response(
+        "<main><h1>Sayfa bulunamadı</h1><a href='/'>Ana sayfa</a></main>",
         404,
       )
   }
@@ -200,6 +329,26 @@ fn protected(
   }
 }
 
+fn admin_dashboard(csrf_token: String, db: database.Database) -> String {
+  let hx = "hx-headers='" <> "{\"x-csrf-token\":\"" <> csrf_token <> "\"}" <> "'"
+  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
+  let all_pages = database.list_all_pages(db)
+  let page_count = list.length(all_pages)
+  let all_projects = database.list_entries(db, "projects")
+  let project_count = list.length(all_projects)
+  "<!doctype html><html lang='tr'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Mamon Yönetim</title><link rel='stylesheet' href='/static/styles.css'><link rel='stylesheet' href='/static/admin.css'><script src='https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js' defer></script></head><body class='admin-body' "
+  <> hx
+  <> "><aside><a class='brand' href='/'><i>M</i>MAMON</a><small>YÖNETİM PANELİ</small><nav><a class='active' href='/admin'>⌂ Genel Bakış</a><a href='/admin/pages'>▤ Sayfalar</a><a href='/admin/projects'>◈ Projeler</a></nav><form class='logout-form' method='post' action='/admin/logout'>"
+  <> csrf_field
+  <> "<button>Oturumu kapat</button></form><a class='back' href='/'>← Siteye dön</a></aside><main class='admin-main'><header><div><small>YÖNETİM PANELİ</small><h1>Genel Bakış</h1></div></header><section class='admin-stats'><article><span>TOPLAM SAYFA</span><b>"
+  <> int.to_string(page_count)
+  <> "</b><small>Tümü yayında</small></article><article><span>TOPLAM PROJE</span><b>"
+  <> int.to_string(project_count)
+  <> "</b><small>Aktif projeler</small></article><article><span>FAALİYET ALANI</span><b>3</b><small>Turizm, emlak, inşaat</small></article><article><span>SON GÜNCELLEME</span><b>Bugün</b><small>—</small></article></section><section class='admin-grid'><div class='panel'><header><div><small>HIZLI ERİŞİM</small><h2>Sayfalar</h2></div></header><div class='quick-links'><a href='/admin/pages'>TÜM SAYFALAR →</a><a href='/admin/pages?cat=anasayfa'>Ana Sayfa</a><a href='/admin/pages?cat=kurumsal'>Kurumsal</a><a href='/admin/pages?cat=turizm'>Turizm</a><a href='/admin/pages?cat=emlak'>Emlak</a><a href='/admin/pages?cat=insaat'>İnşaat</a><a href='/admin/pages?cat=iletisim'>İletişim</a><a href='/admin/pages?cat=en'>English</a></div></div><div class='panel'><header><div><small>SAYFA DÜZENLEYİCİ</small><h2>Ana sayfa içerikleri</h2></div></header><form hx-post='/admin/save' hx-target='#save' hx-swap='innerHTML'>"
+  <> csrf_field
+  <> "<label>Üst başlık<input name='eyebrow' value='2010 DAN BERİ GÜVENLE'></label><label>Ana başlık<textarea name='title'>Köklü deneyim. Kalıcı değer.</textarea></label><label>Açıklama<textarea name='description'>Turizm, emlak ve inşaatta köklü deneyimi; teknoloji, güven ve insan odaklı hizmetle buluşturuyoruz.</textarea></label><div class='save-row'><div id='save'></div><button class='btn accent'>Kaydet</button></div></form></div></section></main></body></html>"
+}
+
 fn login(req: wisp.Request, db: database.Database, csrf_token: String) -> wisp.Response {
   use form <- wisp.require_form(req)
   let csrf_value = list.key_find(form.values, "_csrf_token") |> result.unwrap("")
@@ -225,8 +374,7 @@ fn login(req: wisp.Request, db: database.Database, csrf_token: String) -> wisp.R
             list.key_find(form.values, "email")
             |> result.unwrap("")
             |> account_auth.normalize_email
-          let password =
-            list.key_find(form.values, "password") |> result.unwrap("")
+          let password = list.key_find(form.values, "password") |> result.unwrap("")
           case database.find_admin_by_email(db, email) {
             Some(#(database.AdminUser(id, _, _, True), hash)) ->
               case account_auth.verify_password(password, hash) {
@@ -501,6 +649,23 @@ fn show_entry(db, table, kind, slug) {
   }
 }
 
+fn create_page(req, db) {
+  use form <- wisp.require_form(req)
+  let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
+  let _ =
+    database.create_page(
+      db,
+      get("title"),
+      get("slug"),
+      get("summary"),
+      get("body"),
+      get("seo_title"),
+      get("seo_description"),
+      get("category"),
+    )
+  wisp.html_response(cms.admin_entries("", db, "pages"), 200)
+}
+
 fn create_entry(req, db, table) {
   use form <- wisp.require_form(req)
   let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
@@ -516,6 +681,58 @@ fn create_entry(req, db, table) {
       get("seo_description"),
     )
   wisp.html_response(cms.admin_entries("", db, table), 200)
+}
+
+fn update_page(req, db, id_str) {
+  use form <- wisp.require_form(req)
+  let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
+  case int.parse(id_str) {
+    Ok(id) -> {
+      let _ =
+        database.update_entry(
+          db,
+          "pages",
+          id,
+          get("title"),
+          get("slug"),
+          get("summary"),
+          get("body"),
+          get("seo_title"),
+          get("seo_description"),
+        )
+      wisp.html_response(
+        "<div class='saved'>✓ Değişiklikler kaydedildi.</div>",
+        200,
+      )
+    }
+    Error(_) -> wisp.html_response("Geçersiz ID", 400)
+  }
+}
+
+fn update_entry(req, db, table, id_str) {
+  use form <- wisp.require_form(req)
+  let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
+  case int.parse(id_str) {
+    Ok(id) -> {
+      let _ =
+        database.update_entry(
+          db,
+          table,
+          id,
+          get("title"),
+          get("slug"),
+          get("summary"),
+          get("body"),
+          get("seo_title"),
+          get("seo_description"),
+        )
+      wisp.html_response(
+        "<div class='saved'>✓ Değişiklikler kaydedildi.</div>",
+        200,
+      )
+    }
+    Error(_) -> wisp.html_response("Geçersiz ID", 400)
+  }
 }
 
 fn delete_entry(db, table, id) {
@@ -621,48 +838,4 @@ fn saved(req, db) {
   }
 }
 
-// --- Sayfa sarmalayıcıları (CSRF token enjeksiyonu) ---
-
-fn home_page(csrf_token: String) -> String {
-  let hx = "hx-headers='" <> "{\"x-csrf-token\":\"" <> csrf_token <> "\"}" <> "'"
-  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
-  home
-  |> string.replace("<body>", "<body " <> hx)
-  |> string.replace(
-    "<form hx-post='/hx/contact'",
-    "<form hx-post='/hx/contact' " <> csrf_field,
-  )
-  |> string.replace(
-    "<form hx-post='/hx/chat'",
-    "<form hx-post='/hx/chat' " <> csrf_field,
-  )
-}
-
-fn admin_page(csrf_token: String) -> String {
-  let hx = "hx-headers='" <> "{\"x-csrf-token\":\"" <> csrf_token <> "\"}" <> "'"
-  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
-  admin
-  |> string.replace("<body class='admin-body'>", "<body class='admin-body' " <> hx)
-  |> string.replace(
-    "<form class='logout-form'",
-    "<form class='logout-form' " <> csrf_field,
-  )
-  |> string.replace(
-    "<form hx-post='/admin/save'",
-    "<form hx-post='/admin/save' " <> csrf_field,
-  )
-}
-
-// --- Sabit HTML şablonları ---
-
-const head = "<meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='icon' type='image/png' href='/favicon.png'><link rel='apple-touch-icon' href='/favicon.png'><link rel='manifest' href='/site.webmanifest'><meta name='theme-color' content='#06444c'><link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap' rel='stylesheet'><link rel='stylesheet' href='/static/styles.css'><link rel='stylesheet' href='/static/admin.css'><link rel='stylesheet' href='/static/extra.css'><link rel='stylesheet' href='/static/tourism.css'><script src='https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js' defer></script>"
-
-const home = "<!doctype html><html lang='tr'><head>"
-  <> head
-  <> "<title>Mamon | Turizm, Emlak ve İnşaat</title><meta name='description' content='Mamon, 2010'dan bu yana Antalya ve Muğla'da emlak ve inşaat, dünya genelinde turizm çözümleri sunar.'><link rel='canonical' href='https://mamon.tr/'><meta name='robots' content='index,follow,max-image-preview:large'><meta property='og:type' content='website'><meta property='og:locale' content='tr_TR'><meta property='og:site_name' content='Mamon'><meta property='og:title' content='Mamon | Turizm, Emlak ve İnşaat'><meta property='og:description' content='Yerelden doğan küresel vizyon. 2010'dan beri turizm, emlak ve inşaat.'><meta property='og:url' content='https://mamon.tr/'><meta name='twitter:card' content='summary_large_image'><script type='application/ld+json'>{\\\"@context\\\":\\\"https://schema.org\\\",\\\"@type\\\":\\\"Organization\\\",\\\"name\\\":\\\"Mamon\\\",\\\"url\\\":\\\"https://mamon.tr\\\",\\\"foundingDate\\\":\\\"2010\\\",\\\"areaServed\\\":\\\"Worldwide\\\",\\\"knowsAbout\\\":[\\\"Tourism\\\",\\\"Real Estate\\\",\\\"Construction\\\"]}</script></head><body>\n<header class='top'><a class='brand' href='/'><i>M</i>MAMON</a><nav><a href='#about'>Hakkımızda</a><a href='#work'>Faaliyet Alanları</a><a href='#nexus'>Nexus</a><a href='#contact'>İletişim</a></nav><a class='top-cta' href='#contact'>Bizimle konuşun ↗</a></header>\n<main><section class='hero'><div class='hero-copy'><label>— 2010'DAN BERİ GÜVENLE</label><h1>Yerelden doğan<br><em>küresel</em> vizyon.</h1><p>Turizm, emlak ve inşaatta köklü deneyimi; teknoloji, güven ve insan odaklı hizmetle buluşturuyoruz.</p><div class='actions'><a class='btn light' href='#work'>Neler yapıyoruz ↓</a><a href='#about'>Hikâyemizi keşfedin →</a></div></div><div class='scene'><div class='sun'></div><div class='arch'></div><small>36.8969° N<br>30.7133° E</small></div><div class='stats'><div><b>15+</b><span>Yıllık deneyim</span></div><div><b>3</b><span>Uzmanlık alanı</span></div><div><b>∞</b><span>Küresel erişim</span></div></div></section>\n<section class='about' id='about'><div class='kicker'>01 — BİZ KİMİZ</div><div><h2>Akdeniz'in enerjisini<br><em>dünyaya taşıyoruz.</em></h2><p>2010 yılında çıktığımız yolda farklı sektörlerde aynı ilkeye sadık kaldık: kalıcı değer üretmek. Antalya ve Muğla'da emlak ve inşaat, dünya genelinde turizm faaliyetlerimizle güvenilir iş ortaklıkları kuruyoruz.</p><a class='under' href='#contact'>Mamon'u yakından tanıyın ↗</a></div><div class='orbit'><small>EST.</small><b>2010</b><small>ANTALYA • TÜRKİYE</small></div></section>\n<section class='work' id='work'><div class='work-head'><div><span>02 — FAALİYET ALANLARI</span><h2>Üç alan.<br>Tek bir standart.</h2></div><p>Her projeye bölgesel uzmanlık, uluslararası bakış ve uzun vadeli değer anlayışıyla yaklaşıyoruz.</p></div><div class='cards'><article><small>01</small><i>✦</i><h3>Turizm</h3><p>TÜRSAB üyesi seyahat acentemizle yerli ve yabancı misafirlerimize güvenilir, özenli ve uçtan uca seyahat deneyimleri sunuyoruz.</p><b>TÜRSAB 13127</b><b>KÜRESEL HİZMET</b><a href='#tourism'>↗</a></article><article><small>02</small><i>⌂</i><h3>Emlak</h3><p>Antalya ve Muğla'nın seçkin lokasyonlarında doğru yatırım, satış ve danışmanlık.</p><b>ANTALYA</b><b>MUĞLA</b><a href='#contact'>↗</a></article><article><small>03</small><i>▱</i><h3>İnşaat</h3><p>Estetik, işlev ve sürdürülebilirliği buluşturan nitelikli yaşam alanları.</p><b>PROJE GELİŞTİRME</b><b>UYGULAMA</b><a href='#contact'>↗</a></article></div></section>\n<section class='tourism-story' id='tourism'><div class='tourism-seal'><small>TÜRSAB</small><b>13127</b><span>BELGE NO</span></div><div class='tourism-copy'><span class='kicker'>SEYAHATİN HER ANINDA YANINIZDA</span><h2>Türkiye'yi keşfetmenin<br><em>en güzel hâli.</em></h2><p>TÜRSAB Belge No: 13127 ile faaliyet gösteren seyahat acentemiz, Türkiye'nin zenginliğini yerli ve yabancı misafirlerle buluşturuyor. Tatil planının ilk heyecanından eve dönüş anına kadar; doğru seçenekler, şeffaf iletişim ve içten bir misafirperverlikle her yolculuğu özenle tasarlıyoruz.</p><p>Yurt içi misafirlerimize <strong>Rezervasyon Yap</strong>, dünyanın farklı ülkelerinden gelen konuklarımıza ise <strong>Reservation in Turkey</strong> markalarımızla hizmet veriyor; yerel deneyimimizi uluslararası hizmet anlayışıyla birleştiriyoruz.</p><div class='tourism-links'><a href='https://www.rezervasyonyap.com.tr' target='_blank' rel='noopener'>rezervasyonyap.com.tr <span>↗</span></a><a href='https://www.reservastioninturkey.com' target='_blank' rel='noopener'>reservastioninturkey.com <span>↗</span></a></div></div></section>\n<section class='region'><div><span class='kicker'>03 — BÖLGESEL UZMANLIK</span><h2>İki şehir,<br>sayısız olasılık.</h2><p>Akdeniz ve Ege'nin en değerli bölgelerinde yerel bilgimiz, güçlü saha ağımız ve yatırım odağımızla yanınızdayız.</p><button class='btn dark' hx-get='/hx/regions' hx-target='#map' hx-swap='innerHTML'>Bölgeleri keşfedin ＋</button></div><div class='map' id='map'><div class='dot ant'><b>ANTALYA</b><small>Akdeniz</small></div><div class='dot mug'><b>MUĞLA</b><small>Ege</small></div></div></section>\n<section class='nexus' id='nexus'><div><label>STRATEJİK PARTNERLİK</label><div class='nexus-logo'><i>N</i><b>NEXUS<br><small>TRAVEL TECH</small></b></div><h2>Turizmin bilgisi,<br><em>teknolojinin gücü.</em></h2><p>Nexus Travel Tech partnerliğiyle turizm sektörüne yönelik kapsamlı bir bilgi ağı geliştiriyoruz. Veriyi, deneyimi ve doğru bağlantıları tek bir ekosistemde buluşturuyoruz.</p><div class='features'><span>01　Akıllı bilgi ağı</span><span>02　Küresel bağlantılar</span><span>03　Sektörel içgörü</span></div></div><div class='network'><b>N</b><i></i><i></i><i></i><i></i></div></section>\n<section class='contact' id='contact'><div><span class='kicker'>04 — İLETİŞİM</span><h2>Birlikte değer<br><em>üretelim.</em></h2><p>Yeni bir yatırım, proje veya iş ortaklığı için ekibimizle iletişime geçin.</p><div class='meta'><span><small>E-POSTA</small>info@mamon.com.tr</span><span><small>MERKEZ</small>Antalya, Türkiye</span></div></div><form hx-post='/hx/contact' hx-target='this' hx-swap='innerHTML'><label>Adınız Soyadınız<input required name='name' placeholder='Adınız ve soyadınız'></label><label>E-posta adresiniz<input required type='email' name='email' placeholder='ornek@firma.com'></label><label>İlgilendiğiniz alan<select name='area'><option>Turizm</option><option>Emlak</option><option>İnşaat</option><option>İş ortaklığı</option></select></label><label>Mesajınız<textarea required name='message' placeholder='Size nasıl yardımcı olabiliriz?'></textarea></label><button class='btn accent'>Mesajı gönder ↗</button></form></section></main>\n<footer><a class='brand' href='/'><i>M</i>MAMON</a><p>Turizm • Emlak • İnşaat</p><div><a href='#'>LinkedIn</a><a href='#'>Instagram</a><a href='/admin'>Yönetim</a></div><small>© 2026 Mamon. Tüm hakları saklıdır.</small></footer>\n<details class='chatbox'><summary><span>✦</span> Mamon Asistan</summary><div class='chat-window'><div class='chat-intro'><b>Size nasıl yardımcı olabilirim?</b><p>Turizm, emlak ve projelerimiz hakkında sorun.</p></div><div id='chat-result'></div><form hx-post='/hx/chat' hx-target='#chat-result' hx-swap='beforeend' hx-on::after-request='this.reset()'><input name='message' required maxlength='600' placeholder='Mesajınızı yazın…'><button aria-label='Gönder'>↑</button></form></div></details></body></html>"
-
 const regions = "<div class='region-cards'><article><small>01 / AKDENİZ</small><h3>Antalya</h3><p>Şehir merkezinden kıyı bölgelerine uzanan emlak ve inşaat uzmanlığı.</p></article><article><small>02 / EGE</small><h3>Muğla</h3><p>Bodrum, Fethiye ve çevresinde seçkin yatırım fırsatları.</p></article></div>"
-
-const admin = "<!doctype html><html lang='tr'><head>"
-  <> head
-  <> "<title>Mamon Yönetim</title></head><body class='admin-body'><aside><a class='brand' href='/'><i>M</i>MAMON</a><small>YÖNETİM PANELİ</small><nav><a class='active' href='/admin'>⌂　Genel Bakış</a><a href='/admin/pages'>▤　Sayfalar</a><a href='/admin/projects'>◈　Projeler</a></nav><form class='logout-form' method='post' action='/admin/logout'><button>Oturumu kapat</button></form><a class='back' href='/'>← Siteye dön</a></aside><main class='admin-main'><header><div><small>24 AĞUSTOS 2026</small><h1>Günaydın, Mamon.</h1></div><div class='user'><i>MA</i><span><b>Site Yöneticisi</b><small>Yönetici</small></span></div></header><section class='admin-stats'><article><span>TOPLAM SAYFA</span><b>6</b><small>↑ Tümü yayında</small></article><article><span>FAALİYET ALANI</span><b>3</b><small>Turizm, emlak, inşaat</small></article><article><span>YENİ TALEP</span><b>3</b><small>Son 7 gün</small></article><article><span>SON GÜNCELLEME</span><b>Bugün</b><small>10:42</small></article></section><section class='admin-grid'><div class='panel editor'><header><div><small>ANA SAYFA</small><h2>İçerik düzenleyici</h2></div><span>● YAYINDA</span></header><form hx-post='/admin/save' hx-target='#save' hx-swap='innerHTML'><label>Üst başlık<input name='eyebrow' value='2010&apos;DAN BERİ GÜVENLE'></label><label>Ana başlık<textarea name='title'>Yerelden doğan küresel vizyon.</textarea></label><label>Açıklama<textarea name='description'>Turizm, emlak ve inşaatta köklü deneyimi; teknoloji, güven ve insan odaklı hizmetle buluşturuyoruz.</textarea></label><div class='row'><label>Birincil buton<input name='cta' value='Neler yapıyoruz'></label><label>Bağlantı<input name='url' value='#alanlar'></label></div><div class='save-row'><div id='save'></div><button class='btn accent'>Değişiklikleri kaydet</button></div></form></div><div class='panel activity'><header><div><small>SON HAREKETLER</small><h2>Aktivite</h2></div></header><ul><li><i>MK</i><p><b>Ana sayfa güncellendi</b><span>M. Kaya • 18 dakika önce</span></p></li><li><i>AT</i><p><b>Yeni iletişim talebi</b><span>Ayşe Tan • 2 saat önce</span></p></li><li><i>SY</i><p><b>Turizm içeriği düzenlendi</b><span>S. Yılmaz • Dün</span></p></li></ul></div></section></main></body></html>"
