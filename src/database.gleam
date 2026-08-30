@@ -6,6 +6,7 @@ import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/otp/actor
 import gleam/result
+import gleam/string
 import pog
 
 pub type Database =
@@ -41,13 +42,21 @@ pub fn connect() -> Database {
   }
   case connection {
     Ok(connection) -> {
-      io.println("PostgreSQL bağlantı havuzu hazır")
-      let _ = migrate(connection)
-      let _ = migrate_v2(connection)
+      io.println("✓ PostgreSQL bağlantı havuzu hazır")
+      case migrate(connection) {
+        True -> io.println("✓ Tablolar oluşturuldu/güncellendi (v1)")
+        False -> io.println("✗ Migration v1 başarısız")
+      }
+      case migrate_v2(connection) {
+        True -> io.println("✓ Migration v2 tamamlandı")
+        False -> io.println("✗ Migration v2 başarısız")
+      }
       Some(connection)
     }
-    Error(_) -> {
-      io.println("DATABASE_URL bulunamadı; uygulama veritabanı olmadan başladı")
+    Error(err) -> {
+      io.println("✗ Veritabanı bağlantısı kurulamadı!")
+      io.println("  Hata: " <> string.inspect(err))
+      io.println("  DATABASE_URL: kontrol edin")
       None
     }
   }

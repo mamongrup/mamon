@@ -33,7 +33,21 @@ pub fn main() {
       panic as "SECRET_KEY_BASE gerekli"
     }
   }
-  let _ = seed_content(db)
+  let _ = case db {
+    Some(_) -> {
+      io.println("✓ Veritabanı bağlantısı başarılı")
+      let seed_result = seed_content(db)
+      case seed_result {
+        True -> io.println("✓ Sayfalar veritabanına yazıldı")
+        False -> io.println("✗ Seed başarısız (tablolar eksik olabilir)")
+      }
+      seed_result
+    }
+    None -> {
+      io.println("✗ Veritabanı bağlantısı yok, seed yapılamıyor")
+      False
+    }
+  }
   let assert Ok(_) =
     fn(request) { handle_request(request, db) }
     |> wisp_mist.handler(secret)
@@ -362,6 +376,7 @@ fn render_page_by_slug(
 ) -> wisp.Response {
   case database.find_entry(db, "pages", slug) {
     Some(entry) -> {
+      let _ = io.println("✓ Sayfa bulundu: " <> slug)
       let is_en = kind == "en" || entry.category == "en"
       let footer_html = case is_en {
         True -> cms.en_footer
@@ -385,7 +400,8 @@ fn render_page_by_slug(
       }
       wisp.html_response(cms.page_template(entry, nav_html, footer_html), 200)
     }
-    None ->
+    None -> {
+      let _ = io.println("✗ Sayfa bulunamadı: " <> slug)
       case kind {
         "en" ->
           wisp.html_response(
@@ -398,6 +414,7 @@ fn render_page_by_slug(
             404,
           )
       }
+    }
   }
 }
 
