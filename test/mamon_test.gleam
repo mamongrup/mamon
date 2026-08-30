@@ -31,6 +31,10 @@ pub fn account_validation_test() {
 pub fn cms_entry_path_test() {
   let page = Entry(1, "Kurumsal", "kurumsal", "", "", "", "", "kurumsal")
   let project = Entry(2, "Proje", "ornek", "", "", "", "", "projeler")
+  let en_home = Entry(3, "Home", "en", "", "", "", "", "en")
+  let en_corp = Entry(4, "Corporate", "corporate", "", "", "", "", "en")
   assert cms.entry_path(page) == "/kurumsal/"
   assert cms.entry_path(project) == "/projeler/ornek"
+  assert cms.entry_path(en_home) == "/en/"
+  assert cms.entry_path(en_corp) == "/en/corporate/"
 }

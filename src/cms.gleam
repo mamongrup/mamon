@@ -29,6 +29,16 @@ fn active(current: String, path: String) -> String {
 }
 
 pub fn nav(current: String) -> String {
+  let en_href = case current {
+    "/" | "" -> "/en/"
+    "/kurumsal" | "/kurumsal/" -> "/en/corporate/"
+    "/turizm" | "/turizm/" -> "/en/tourism/"
+    "/emlak" | "/emlak/" -> "/en/real-estate/"
+    "/insaat" | "/insaat/" -> "/en/construction/"
+    "/projeler" | "/projeler/" -> "/en/projects/"
+    "/iletisim" | "/iletisim/" -> "/en/contact/"
+    _ -> "/en/"
+  }
   "<header class='header'><a class='logo' href='/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><nav class='nav'><a"
   <> active(current, "/")
   <> " href='/'>Ana Sayfa</a><a"
@@ -43,7 +53,9 @@ pub fn nav(current: String) -> String {
   <> active(current, "/projeler/")
   <> " href='/projeler/'>Projeler</a><a"
   <> active(current, "/iletisim/")
-  <> " href='/iletisim/'>İletişim</a><a class='language' href='/en/'>EN</a></nav></header>"
+  <> " href='/iletisim/'>İletişim</a><a class='language' href='"
+  <> en_href
+  <> "'>EN</a></nav></header>"
 }
 
 const corporate_head = "<meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='icon' type='image/png' href='/static/favicon.png'><link rel='apple-touch-icon' href='/static/favicon.png'><link rel='manifest' href='/static/site.webmanifest'><meta name='theme-color' content='#06444c'><link rel='stylesheet' href='/static/corporate.css'><link rel='stylesheet' href='/static/logo.css'>"
@@ -51,6 +63,16 @@ const corporate_head = "<meta charset='utf-8'><meta name='viewport' content='wid
 pub const corporate_footer = "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><p>Turizm, emlak ve inşaatta köklü deneyim; güvenilir ortaklıklar.</p></div><div><h4>KURUMSAL</h4><nav><a href='/kurumsal/'>Hakkımızda</a><a href='/projeler/'>Projeler</a></nav></div><div><h4>FAALİYETLER</h4><nav><a href='/turizm/'>Turizm</a><a href='/emlak/'>Emlak</a><a href='/insaat/'>İnşaat</a></nav></div><div><h4>İLETİŞİM</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon. Tüm hakları saklıdır.</div></footer>"
 
 pub fn en_nav(current: String) -> String {
+  let tr_href = case current {
+    "/en" | "/en/" -> "/"
+    "/en/corporate" | "/en/corporate/" -> "/kurumsal/"
+    "/en/tourism" | "/en/tourism/" -> "/turizm/"
+    "/en/real-estate" | "/en/real-estate/" -> "/emlak/"
+    "/en/construction" | "/en/construction/" -> "/insaat/"
+    "/en/projects" | "/en/projects/" -> "/projeler/"
+    "/en/contact" | "/en/contact/" -> "/iletisim/"
+    _ -> "/"
+  }
   "<header class='header'><a class='logo' href='/en/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><nav class='nav'><a"
   <> active(current, "/en/")
   <> " href='/en/'>Home</a><a"
@@ -65,7 +87,9 @@ pub fn en_nav(current: String) -> String {
   <> active(current, "/en/projects/")
   <> " href='/en/projects/'>Projects</a><a"
   <> active(current, "/en/contact/")
-  <> " href='/en/contact/'>Contact</a><a class='language' href='/'>TR</a></nav></header>"
+  <> " href='/en/contact/'>Contact</a><a class='language' href='"
+  <> tr_href
+  <> "'>TR</a></nav></header>"
 }
 
 pub const en_footer = "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/en/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><p>Tourism • Real Estate • Construction</p></div><div><h4>CORPORATE</h4><nav><a href='/en/corporate/'>About Us</a><a href='/en/projects/'>Projects</a></nav></div><div><h4>DIVISIONS</h4><nav><a href='/en/tourism/'>Tourism</a><a href='/en/real-estate/'>Real Estate</a><a href='/en/construction/'>Construction</a></nav></div><div><h4>CONTACT</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon. All rights reserved.</div></footer>"
@@ -99,7 +123,11 @@ pub fn page_template(
   }
   let canonical_path = case category {
     "anasayfa" -> "/"
-    "en" -> "/en/"
+    "en" ->
+      case slug {
+        "en" -> "/en/"
+        _ -> "/en/" <> slug <> "/"
+      }
     other -> "/" <> other <> "/"
   }
   "<!doctype html><html lang='"
@@ -530,8 +558,13 @@ pub fn entry_path(entry: Entry) -> String {
   let Entry(_, _, slug, _, _, _, _, category) = entry
   case category {
     "anasayfa" -> "/"
-    "kurumsal" | "turizm" | "emlak" | "insaat" | "iletisim" | "en" ->
+    "kurumsal" | "turizm" | "emlak" | "insaat" | "iletisim" ->
       "/" <> category <> "/"
+    "en" ->
+      case slug {
+        "en" -> "/en/"
+        _ -> "/en/" <> slug <> "/"
+      }
     "projeler" -> "/projeler/" <> slug
     _ -> "/sayfa/" <> slug
   }
