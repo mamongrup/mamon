@@ -834,9 +834,7 @@ fn message(
   _csrf_token: String,
 ) -> wisp.Response {
   use form <- wisp.require_form(req)
-  let csrf_value =
-    list.key_find(form.values, "_csrf_token") |> result.unwrap("")
-  case csrf.validate(req, csrf_value) {
+  case public_form_origin_allowed(req) {
     False -> wisp.html_response("CSRF token geçersiz.", 403)
     True -> {
       let ip = get_client_ip(req)
@@ -875,6 +873,21 @@ fn message(
       }
     }
   }
+}
+
+fn public_form_origin_allowed(req: wisp.Request) -> Bool {
+  let origin = request.get_header(req, "origin") |> result.unwrap("")
+  list.contains(
+    [
+      "https://mamon.tr",
+      "https://www.mamon.tr",
+      "https://mamon.com.tr",
+      "https://www.mamon.com.tr",
+      "http://localhost:8000",
+      "http://127.0.0.1:8000",
+    ],
+    origin,
+  )
 }
 
 fn saved(req, db) {
