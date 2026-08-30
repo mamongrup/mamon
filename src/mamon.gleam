@@ -51,7 +51,7 @@ fn seed_content(db: database.Database) -> Bool {
       "Ana Sayfa",
       "anasayfa",
       "Turizm, emlak ve inşaatta köklü deneyim; güvenilir ortaklıklar.",
-      "<section class='hero-corp'><div class='hero-main'><span class='overline'>2010'DAN BERİ GÜVENLE</span><h1>Köklü deneyim.<br><em>Kalıcı değer.</em></h1><p>Turizm, emlak ve inşaat alanlarında yerel uzmanlığı uluslararası bakış açısıyla birleştiriyor; insanlar, şehirler ve gelecek için güvenilir işler üretiyoruz.</p><div class='hero-buttons'><a class='button copper' href='/kurumsal/'>Bizi tanıyın <span>→</span></a><a class='button outline' href='/projeler/'>Projelerimiz <span>↗</span></a></div></div></section><section class='trustbar'><div><small>KURULUŞ</small><strong>2010</strong></div><div><small>UZMANLIK</small><strong>3 faaliyet alanı</strong></div><div><small>TURİZM</small><strong>TÜRSAB 13127</strong></div><div><small>ERİŞİM</small><strong>Türkiye ve dünya</strong></div></section><section class='intro-corp'><div><span class='section-no'>01 — MAMON</span></div><div><h2>Farklı sektörlerde,<br>aynı güven anlayışı.</h2><p>Mamon; turizmde misafirperverliği, emlakta doğru yatırımı, inşaatta ise nitelikli yaşam alanlarını odağına alır. Her faaliyet alanımız kendi uzman ekibi ve markasıyla gelişirken, tüm işlerimizin merkezinde şeffaflık, kalite ve uzun vadeli değer bulunur.</p></div></section><section class='divisions'><div class='divisions-head'><div><span class='section-no'>02 — FAALİYET ALANLARI</span><h2 class='section-title'>Uzmanlığımız</h2></div><p>Her alan için ayrı içerik, ayrı proje yapısı ve büyümeye hazır kurumsal sayfalar.</p></div><div class='division-grid'><article class='division'><span>01</span><h3>Turizm</h3><p>TÜRSAB üyesi acentemizle yerli ve yabancı misafirlere güvenilir seyahat çözümleri.</p><a href='/turizm/'>TURİZMİ KEŞFEDİN <b>→</b></a></article><article class='division'><span>02</span><h3>Emlak</h3><p>Antalya ve Muğla'da doğru lokasyon, doğru analiz ve güvenilir yatırım danışmanlığı.</p><a href='/emlak/'>EMLAĞI KEŞFEDİN <b>→</b></a></article><article class='division'><span>03</span><h3>İnşaat</h3><p>İşlevsel, estetik ve çevresiyle uyumlu yaşam alanları için proje geliştirme.</p><a href='/insaat/'>İNŞAATI KEŞFEDİN <b>→</b></a></article></div></section><section class='project-strip'><header><div><span class='section-no'>03 — PROJELER</span><h2 class='section-title'>Geleceğe bıraktığımız iz</h2></div><a class='button copper' href='/projeler/'>Tüm projeler →</a></header><div class='project-list'><article class='project-tile'><small>PROJE GELİŞTİRME</small><h3>Yeni projeler çok yakında</h3><p>İnşaat ve gayrimenkul projelerimiz bu alanda ayrı detay sayfalarıyla yayınlanacak.</p></article><article class='project-tile'><small>ANTALYA</small><h3>Yerel uzmanlık</h3></article><article class='project-tile'><small>MUĞLA</small><h3>Seçkin lokasyonlar</h3></article></div></section><section class='partner'><div class='partner-badge'><small>STRATEJİK PARTNER</small><b>Nexus Travel Tech</b></div><div><h2>Turizm deneyimini teknolojiyle güçlendiriyoruz.</h2><p>Nexus Travel Tech partnerliğimizle turizm sektörüne yönelik kapsamlı bilgi ağı çalışmalarına katkı sunuyor; yerel deneyimi küresel bağlantılarla bir araya getiriyoruz.</p></div></section><section class='cta' id='iletisim'><h2>Birlikte kalıcı değer üretelim.</h2><a class='button outline' href='mailto:info@mamon.com.tr'>info@mamon.com.tr <span>↗</span></a></section>",
+      "<section class='hero-corp'><div class='hero-main'><span class='overline'>2010'DAN BERİ GÜVENLE</span><h1>Köklü deneyim.<br><em>Kalıcı değer.</em></h1><p>Turizm, emlak ve inşaat alanlarında yerel uzmanlığı uluslararası bakış açısıyla birleştiriyor; insanlar, şehirler ve gelecek için güvenilir işler üretiyoruz.</p><div class='hero-buttons'><a class='button copper' href='/kurumsal/'>Bizi tanıyın <span>→</span></a><a class='button outline' href='/projeler/'>Projelerimiz <span>↗</span></a></div></div><div class='hero-side'></div></section><section class='trustbar'><div><small>KURULUŞ</small><strong>2010</strong></div><div><small>UZMANLIK</small><strong>3 faaliyet alanı</strong></div><div><small>TURİZM</small><strong>TÜRSAB 13127</strong></div><div><small>ERİŞİM</small><strong>Türkiye ve dünya</strong></div></section><section class='intro-corp'><div><span class='section-no'>01 — MAMON</span></div><div><h2>Farklı sektörlerde,<br>aynı güven anlayışı.</h2><p>Mamon; turizmde misafirperverliği, emlakta doğru yatırımı, inşaatta ise nitelikli yaşam alanlarını odağına alır. Her faaliyet alanımız kendi uzman ekibi ve markasıyla gelişirken, tüm işlerimizin merkezinde şeffaflık, kalite ve uzun vadeli değer bulunur.</p></div></section><section class='divisions'><div class='divisions-head'><div><span class='section-no'>02 — FAALİYET ALANLARI</span><h2 class='section-title'>Uzmanlığımız</h2></div><p>Her alan için ayrı içerik, ayrı proje yapısı ve büyümeye hazır kurumsal sayfalar.</p></div><div class='division-grid'><article class='division'><span>01</span><h3>Turizm</h3><p>TÜRSAB üyesi acentemizle yerli ve yabancı misafirlere güvenilir seyahat çözümleri.</p><a href='/turizm/'>TURİZMİ KEŞFEDİN <b>→</b></a></article><article class='division'><span>02</span><h3>Emlak</h3><p>Antalya ve Muğla'da doğru lokasyon, doğru analiz ve güvenilir yatırım danışmanlığı.</p><a href='/emlak/'>EMLAĞI KEŞFEDİN <b>→</b></a></article><article class='division'><span>03</span><h3>İnşaat</h3><p>İşlevsel, estetik ve çevresiyle uyumlu yaşam alanları için proje geliştirme.</p><a href='/insaat/'>İNŞAATI KEŞFEDİN <b>→</b></a></article></div></section><section class='project-strip'><header><div><span class='section-no'>03 — PROJELER</span><h2 class='section-title'>Geleceğe bıraktığımız iz</h2></div><a class='button copper' href='/projeler/'>Tüm projeler →</a></header><div class='project-list'><article class='project-tile'><small>PROJE GELİŞTİRME</small><h3>Yeni projeler çok yakında</h3><p>İnşaat ve gayrimenkul projelerimiz bu alanda ayrı detay sayfalarıyla yayınlanacak.</p></article><article class='project-tile'><small>ANTALYA</small><h3>Yerel uzmanlık</h3></article><article class='project-tile'><small>MUĞLA</small><h3>Seçkin lokasyonlar</h3></article></div></section><section class='partner'><div class='partner-badge'><small>STRATEJİK PARTNER</small><b>Nexus Travel Tech</b></div><div><h2>Turizm deneyimini teknolojiyle güçlendiriyoruz.</h2><p>Nexus Travel Tech partnerliğimizle turizm sektörüne yönelik kapsamlı bilgi ağı çalışmalarına katkı sunuyor; yerel deneyimi küresel bağlantılarla bir araya getiriyoruz.</p></div></section><section class='cta' id='iletisim'><h2>Birlikte kalıcı değer üretelim.</h2><a class='button outline' href='mailto:info@mamon.com.tr'>info@mamon.com.tr <span>↗</span></a></section>",
       "Mamon | Turizm, Emlak ve İnşaat",
       "Turizm, emlak ve inşaatta köklü deneyim; güvenilir ortaklıklar.",
       "anasayfa",
@@ -117,9 +117,64 @@ fn seed_content(db: database.Database) -> Bool {
       "English",
       "en",
       "Mamon has created lasting value in tourism, real estate and construction since 2010.",
-      "<section class='hero-corp'><div class='hero-main'><span class='overline'>TRUSTED SINCE 2010</span><h1>Deep experience.<br><em>Lasting value.</em></h1><p>We combine local expertise with an international perspective across tourism, real estate and construction.</p><div class='hero-buttons'><a class='button copper' href='/en/#about'>Discover Mamon →</a><a class='button outline' href='mailto:info@mamon.com.tr'>Contact us ↗</a></div></div></section><section class='trustbar'><div><small>FOUNDED</small><strong>2010</strong></div><div><small>EXPERTISE</small><strong>3 business areas</strong></div><div><small>TOURISM</small><strong>TÜRSAB 13127</strong></div><div><small>REACH</small><strong>Türkiye & worldwide</strong></div></section><section class='intro-corp' id='about'><div><span class='section-no'>01 — MAMON</span></div><div><h2>Different industries.<br>One standard of trust.</h2><p>Based in Antalya, Mamon serves domestic and international travellers, supports real estate investments in Antalya and Muğla, and develops high-quality construction projects designed for lasting value.</p></div></section><section class='divisions'><div class='division-grid'><article class='division'><span>01</span><h3>Tourism</h3><p>Reliable travel services for domestic and international guests through our TÜRSAB-certified agency.</p><a href='/turizm/'>DISCOVER TOURISM →</a></article><article class='division'><span>02</span><h3>Real Estate</h3><p>Local knowledge and transparent investment guidance across Antalya and Muğla.</p><a href='/emlak/'>DISCOVER REAL ESTATE →</a></article><article class='division'><span>03</span><h3>Construction</h3><p>Functional, refined and sustainable spaces created for modern life.</p><a href='/insaat/'>DISCOVER CONSTRUCTION →</a></article></div></section>",
+      "<section class='hero-corp'><div class='hero-main'><span class='overline'>TRUSTED SINCE 2010</span><h1>Deep experience.<br><em>Lasting value.</em></h1><p>We combine local expertise with an international perspective across tourism, real estate and construction.</p><div class='hero-buttons'><a class='button copper' href='/en/#about'>Discover Mamon →</a><a class='button outline' href='mailto:info@mamon.com.tr'>Contact us ↗</a></div></div><div class='hero-side'></div></section><section class='trustbar'><div><small>FOUNDED</small><strong>2010</strong></div><div><small>EXPERTISE</small><strong>3 business areas</strong></div><div><small>TOURISM</small><strong>TÜRSAB 13127</strong></div><div><small>REACH</small><strong>Türkiye & worldwide</strong></div></section><section class='intro-corp' id='about'><div><span class='section-no'>01 — MAMON</span></div><div><h2>Different industries.<br>One standard of trust.</h2><p>Based in Antalya, Mamon serves domestic and international travellers, supports real estate investments in Antalya and Muğla, and develops high-quality construction projects designed for lasting value.</p></div></section><section class='divisions'><div class='division-grid'><article class='division'><span>01</span><h3>Tourism</h3><p>Reliable travel services for domestic and international guests through our TÜRSAB-certified agency.</p><a href='/en/tourism/'>DISCOVER TOURISM →</a></article><article class='division'><span>02</span><h3>Real Estate</h3><p>Local knowledge and transparent investment guidance across Antalya and Muğla.</p><a href='/en/real-estate/'>DISCOVER REAL ESTATE →</a></article><article class='division'><span>03</span><h3>Construction</h3><p>Functional, refined and sustainable spaces created for modern life.</p><a href='/en/construction/'>DISCOVER CONSTRUCTION →</a></article></div></section>",
       "Mamon | Tourism, Real Estate & Construction",
       "Mamon has created lasting value in tourism, real estate and construction since 2010.",
+      "en",
+    )
+  let _ =
+    database.seed_page(
+      db,
+      "Tourism",
+      "tourism",
+      "TÜRSAB-certified Mamon travel agency serving domestic and international tourists across Turkey.",
+      "<div class='content-grid'><div><span class='section-no'>TÜRSAB LICENSE NO</span><h2>13127</h2></div><div><h2>Local expertise, international service.</h2><p>As a TÜRSAB member travel agency, we bring Turkey's natural and cultural wealth to domestic and international guests. With transparent communication and strong supplier networks, we are a reliable solution partner at every stage of your journey.</p><div class='facts'><div class='fact'><b>13127</b><small>TÜRSAB LICENSE</small></div><div class='fact'><b>Domestic</b><small>TURKEY MARKET</small></div><div class='fact'><b>Global</b><small>INTERNATIONAL GUESTS</small></div></div></div></div><div class='cards-list'><article class='info-card'><h3>Hotels & Holidays</h3><p>Accommodation options for different expectations and budgets.</p></article><article class='info-card'><h3>Tours & Experiences</h3><p>Routes that introduce Turkey's culture and nature up close.</p></article><article class='info-card'><h3>Guest Support</h3><p>Accessible service from reservation to return.</p></article></div><section class='cta'><h2>Let's plan your trip together.</h2><div><a class='button outline' href='https://www.rezervasyonyap.com.tr'>Rezervasyon Yap ↗</a> <a class='button outline' href='https://www.reservastioninturkey.com'>Reservation in Turkey ↗</a></div></section>",
+      "Tourism | Mamon",
+      "TÜRSAB-certified Mamon travel agency serving domestic and international tourists across Turkey.",
+      "en",
+    )
+  let _ =
+    database.seed_page(
+      db,
+      "Real Estate",
+      "real-estate",
+      "Mamon Estate offers reliable real estate investment and sales consulting in Antalya and Muğla.",
+      "<div class='content-grid'><div><span class='section-no'>REGIONAL EXPERTISE</span><h2>Antalya<br>& Muğla</h2></div><div><h2>Trust in real estate is born from knowledge.</h2><p><strong>Mamon Estate</strong> brings together real estate opportunities that fit your living and investment goals with local expertise. We believe every real estate decision has a different purpose.</p><div class='cards-list'><article class='info-card'><h3>Investment Consulting</h3><p>Opportunity analysis based on data and regional development.</p></article><article class='info-card'><h3>Sales & Portfolio</h3><p>Reliable process management for quality real estate.</p></article><article class='info-card'><h3>Land Development</h3><p>Project and feasibility approach that reads potential correctly.</p></article></div></div></div></div><section class='partner'><div class='partner-badge'><small>OUR REAL ESTATE BRAND</small><b>Mamon Estate</b></div><div><h2>Discover our distinguished portfolio.</h2><p>Visit the Mamon Estate website for current real estate options for sale and investment.</p><a class='button copper' href='https://mamonestate.com' target='_blank' rel='noopener'>mamonestate.com ↗</a></div></section><section class='cta'><h2>Let's discuss your real estate goals.</h2><a class='button outline' href='https://mamonestate.com' target='_blank' rel='noopener'>Visit Mamon Estate ↗</a></section>",
+      "Real Estate | Mamon Estate",
+      "Mamon Estate offers reliable real estate investment and sales consulting in Antalya and Muğla.",
+      "en",
+    )
+  let _ =
+    database.seed_page(
+      db,
+      "Construction",
+      "construction",
+      "Mamon Construction develops qualified living projects exclusively in horizontal architecture in Antalya and Muğla.",
+      "<div class='content-grid'><div><span class='section-no'>PROJECT APPROACH</span><h2>From idea<br>to living.</h2></div><div><h2>Our expertise is solely in horizontal architecture.</h2><p>As Mamon Construction, we do not develop vertical building projects; we focus all our expertise on horizontal architecture.</p><p>From correct site selection to design, from application to after-delivery, we embrace a holistic project management approach.</p><div class='cards-list'><article class='info-card'><h3>Project Development</h3><p>Right need, right concept and solid feasibility.</p></article><article class='info-card'><h3>Implementation</h3><p>Site management that balances quality, time and budget.</p></article><article class='info-card'><h3>Horizontal Living</h3><p>Projects that protect human scale, privacy and strong connection with open spaces.</p></article></div></div></div></div><section class='partner'><div class='partner-badge'><small>OUR SOLE SPECIALIZATION</small><b>Horizontal Architecture</b></div><div><h2>Our focus is clear, our expertise is deep.</h2><p>We do not work on building models other than horizontal architecture.</p></div></section><section class='cta'><h2>Let's develop your horizontal architecture project together.</h2><a class='button outline' href='mailto:info@mamon.com.tr'>Contact us ↗</a></section>",
+      "Construction | Mamon",
+      "Mamon Construction develops qualified living projects exclusively in horizontal architecture in Antalya and Muğla.",
+      "en",
+    )
+  let _ =
+    database.seed_page(
+      db,
+      "Corporate",
+      "corporate",
+      "Mamon is an Antalya-based group of companies active in tourism, real estate and construction since 2010.",
+      "<div class='content-grid'><div><span class='section-no'>ABOUT US</span><h2>Together, further.</h2></div><div><p>Mamon's journey began in 2010 with the goal of creating lasting and reliable work. Today we operate in tourism worldwide, and in real estate and construction in Antalya and Muğla.</p><p>We bring our different areas of expertise together under one corporate understanding: keeping our word, being transparent, seeking quality in details and taking a long-term view of every relationship we build.</p><div class='facts'><div class='fact'><b>2010</b><small>FOUNDED</small></div><div class='fact'><b>3</b><small>BUSINESS AREAS</small></div><div class='fact'><b>2+ countries</b><small>GLOBAL REACH</small></div></div></div></div></div><section class='partner'><div class='partner-badge'><small>OUR VALUES</small><b>Trust</b></div><div><h2>People are at the heart of our work.</h2><p>In our relationships with our guests, investors, business partners and team members, we base everything on openness and mutual trust.</p></div></section>",
+      "Corporate | Mamon",
+      "Mamon is an Antalya-based group of companies active in tourism, real estate and construction since 2010.",
+      "en",
+    )
+  let _ =
+    database.seed_page(
+      db,
+      "Contact",
+      "contact",
+      "Get in touch with Mamon about tourism, real estate, horizontal architecture and business partnership projects.",
+      "<div class='content-grid'><div><span class='section-no'>GET IN TOUCH</span><h2>The right questions,<br>great beginnings.</h2></div><div><div class='contact-item'><small>EMAIL</small><a href='mailto:info@mamon.com.tr'>info@mamon.com.tr</a></div><div class='contact-item'><small>PHONE</small><a href='tel:+905323977957'>+90 532 397 7957</a></div><div class='contact-item'><small>WHATSAPP</small><a href='https://wa.me/905323977957' target='_blank' rel='noopener'>Message us on WhatsApp ↗</a></div><div class='contact-item'><small>HEAD OFFICE</small><span>Kesikkapı Mah. Çarşı Cd. No:254</span><p>Fethiye / Muğla, Türkiye</p></div><div class='contact-item'><small>AREAS</small><span>Tourism · Real Estate · Horizontal Architecture</span></div></div></div></div>",
+      "Contact | Mamon",
+      "Get in touch with Mamon about tourism, real estate, horizontal architecture and business partnership projects.",
       "en",
     )
   True
@@ -181,6 +236,11 @@ fn handle_route(
     Get, ["kurumsal"], _ -> render_cms_page(db, "kurumsal", "kurumsal")
     Get, ["iletisim"], _ -> render_cms_page(db, "iletisim", "iletisim")
     Get, ["en"], _ -> render_cms_page(db, "en", "en")
+    Get, ["en", "projects"], _ ->
+      wisp.html_response(cms.en_projects_page(db), 200)
+    Get, ["en", "projects", slug], _ ->
+      show_en_entry(db, slug)
+    Get, ["en", slug], _ -> show_en_entry(db, slug)
     Get, ["projeler"], _ -> wisp.html_response(cms.projects_page(db), 200)
     Get, ["sayfa", slug], _ -> show_entry(db, "pages", "sayfa", slug)
     Get, ["projeler", slug], _ -> show_entry(db, "projects", "projeler", slug)
@@ -675,6 +735,17 @@ fn show_entry(db, table, kind, slug) {
     None ->
       wisp.html_response(
         "<main><h1>İçerik bulunamadı</h1><a href='/'>Ana sayfa</a></main>",
+        404,
+      )
+  }
+}
+
+fn show_en_entry(db, slug) {
+  case database.find_entry(db, "pages", slug) {
+    Some(entry) -> wisp.html_response(cms.en_entry_page(entry), 200)
+    None ->
+      wisp.html_response(
+        "<main><h1>Page not found</h1><a href='/en/'>Home</a></main>",
         404,
       )
   }

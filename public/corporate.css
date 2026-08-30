@@ -139,7 +139,7 @@ a {
 .hero-side {
   position: relative;
   overflow: hidden;
-  background: #d8d5ce url('/images/mamon-office.webp') center center / cover no-repeat;
+  background: #d8d5ce url('/static/images/mamon-office.webp') center center / cover no-repeat;
 }
 .hero-side:before {
   display: none;

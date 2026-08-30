@@ -16,7 +16,13 @@ pub fn escape(value: String) -> String {
 // --- Corporate site templates ---
 
 fn active(current: String, path: String) -> String {
-  case current == path {
+  let norm = fn(s) {
+    case string.ends_with(s, "/") {
+      True -> string.drop_end(s, 1)
+      False -> s
+    }
+  }
+  case norm(current) == norm(path) {
     True -> " class='active'"
     False -> ""
   }
@@ -48,21 +54,21 @@ pub fn en_nav(current: String) -> String {
   "<header class='header'><a class='logo' href='/en/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><nav class='nav'><a"
   <> active(current, "/en/")
   <> " href='/en/'>Home</a><a"
-  <> active(current, "/en/#about")
-  <> " href='/en/#about'>Corporate</a><a"
-  <> active(current, "/turizm/")
-  <> " href='/turizm/'>Tourism</a><a"
-  <> active(current, "/emlak/")
-  <> " href='/emlak/'>Real Estate</a><a"
-  <> active(current, "/insaat/")
-  <> " href='/insaat/'>Construction</a><a"
-  <> active(current, "/projeler/")
-  <> " href='/projeler/'>Projects</a><a"
-  <> active(current, "/iletisim/")
-  <> " href='/iletisim/'>Contact</a><a class='language' href='/'>TR</a></nav></header>"
+  <> active(current, "/en/corporate/")
+  <> " href='/en/corporate/'>Corporate</a><a"
+  <> active(current, "/en/tourism/")
+  <> " href='/en/tourism/'>Tourism</a><a"
+  <> active(current, "/en/real-estate/")
+  <> " href='/en/real-estate/'>Real Estate</a><a"
+  <> active(current, "/en/construction/")
+  <> " href='/en/construction/'>Construction</a><a"
+  <> active(current, "/en/projects/")
+  <> " href='/en/projects/'>Projects</a><a"
+  <> active(current, "/en/contact/")
+  <> " href='/en/contact/'>Contact</a><a class='language' href='/'>TR</a></nav></header>"
 }
 
-pub const en_footer = "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/en/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><p>Tourism • Real Estate • Construction</p></div><div><h4>LANGUAGE</h4><nav><a href='/'>Türkçe</a><a href='/en/'>English</a></nav></div><div><h4>CONTACT</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon</div></footer>"
+pub const en_footer = "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/en/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><p>Tourism • Real Estate • Construction</p></div><div><h4>CORPORATE</h4><nav><a href='/en/corporate/'>About Us</a><a href='/en/projects/'>Projects</a></nav></div><div><h4>DIVISIONS</h4><nav><a href='/en/tourism/'>Tourism</a><a href='/en/real-estate/'>Real Estate</a><a href='/en/construction/'>Construction</a></nav></div><div><h4>CONTACT</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon. All rights reserved.</div></footer>"
 
 pub fn page_template(
   entry: Entry,
@@ -72,7 +78,7 @@ pub fn page_template(
   let Entry(
     _,
     title,
-    _slug,
+    slug,
     summary,
     body,
     seo_title,
@@ -91,9 +97,10 @@ pub fn page_template(
     "en" -> "en"
     _ -> "tr"
   }
-  let canonical_kind = case category {
-    "anasayfa" -> ""
-    other -> other
+  let canonical_path = case category {
+    "anasayfa" -> "/"
+    "en" -> "/en/"
+    other -> "/" <> other <> "/"
   }
   "<!doctype html><html lang='"
   <> lang
@@ -103,17 +110,14 @@ pub fn page_template(
   <> escape(final_title)
   <> "</title><meta name='description' content='"
   <> escape(final_description)
-  <> "'><link rel='canonical' href='https://mamon.tr/"
-  <> canonical_kind
-  <> case canonical_kind {
-    "" -> ""
-    _ -> "/"
-  }
+  <> "'><link rel='canonical' href='https://mamon.tr"
+  <> canonical_path
   <> "'></head><body>"
   <> nav_html
   <> "<main>"
-  <> case category {
-    "anasayfa" | "en" -> body
+  <> case slug {
+    "anasayfa" -> body
+    "en" -> body
     _ ->
       "<section class='page-hero'><span class='overline'>"
       <> escape(string.uppercase(title))
@@ -142,7 +146,7 @@ pub fn entry_page(entry: Entry, kind: String) -> String {
     body,
     seo_title,
     seo_description,
-    _category,
+    category,
   ) = entry
   let final_title = case seo_title {
     "" -> title <> " | Mamon"
@@ -152,15 +156,22 @@ pub fn entry_page(entry: Entry, kind: String) -> String {
     "" -> summary
     _ -> seo_description
   }
-  let footer_html = case kind {
-    "en" -> en_footer
+  let is_english = category == "en" || kind == "en"
+  let footer_html = case is_english {
+    True -> en_footer
     _ -> corporate_footer
   }
-  let nav_html = case kind {
-    "en" -> en_nav("/" <> kind <> "/" <> slug)
+  let nav_html = case is_english {
+    True -> en_nav("/en/" <> slug)
     _ -> nav("/" <> kind <> "/" <> slug)
   }
-  "<!doctype html><html lang='tr'><head>"
+  let lang = case is_english {
+    True -> "en"
+    _ -> "tr"
+  }
+  "<!doctype html><html lang='"
+  <> lang
+  <> "'><head>"
   <> corporate_head
   <> "<title>"
   <> escape(final_title)
@@ -218,6 +229,74 @@ pub fn projects_page(database: Database) -> String {
   }
   <> "</div></section></main>"
   <> corporate_footer
+  <> "</body></html>"
+}
+
+pub fn en_projects_page(database: Database) -> String {
+  let cards =
+    database.list_published_entries(database, "projects")
+    |> list.map(fn(entry) {
+      let Entry(_, title, slug, summary, _, _, _, _) = entry
+      "<article class='info-card'><h3>"
+      <> escape(title)
+      <> "</h3><p>"
+      <> escape(summary)
+      <> "</p><a class='button copper' href='/en/projects/"
+      <> escape(slug)
+      <> "'>View project →</a></article>"
+    })
+    |> string.join("")
+  "<!doctype html><html lang='en'><head>"
+  <> corporate_head
+  <> "<title>Projects | Mamon</title><meta name='description' content='Mamon projects'><link rel='canonical' href='https://mamon.tr/en/projects/'></head><body>"
+  <> en_nav("/en/projects/")
+  <> "<main><section class='page-hero'><span class='overline'>PROJECTS</span><h1>The mark we leave for the future</h1></section><section class='content'><div class='cards-list'>"
+  <> case cards {
+    "" -> "<p>New projects will be published here soon.</p>"
+    _ -> cards
+  }
+  <> "</div></section></main>"
+  <> en_footer
+  <> "</body></html>"
+}
+
+pub fn en_entry_page(entry: Entry) -> String {
+  let Entry(_, title, slug, summary, body, seo_title, seo_description, _category) = entry
+  let final_title = case seo_title {
+    "" -> title <> " | Mamon"
+    _ -> seo_title
+  }
+  let final_description = case seo_description {
+    "" -> summary
+    _ -> seo_description
+  }
+  "<!doctype html><html lang='en'><head>"
+  <> corporate_head
+  <> "<title>"
+  <> escape(final_title)
+  <> "</title><meta name='description' content='"
+  <> escape(final_description)
+  <> "'><link rel='canonical' href='https://mamon.tr/en/"
+  <> escape(slug)
+  <> "/'><meta property='og:type' content='article'><meta property='og:title' content='"
+  <> escape(final_title)
+  <> "'><meta property='og:description' content='"
+  <> escape(final_description)
+  <> "'></head><body>"
+  <> en_nav("/en/" <> slug)
+  <> "<main><section class='page-hero'><span class='overline'>"
+  <> escape(string.uppercase(title))
+  <> "</span><h1>"
+  <> escape(title)
+  <> "</h1>"
+  <> case summary {
+    "" -> ""
+    _ -> "<p>" <> escape(summary) <> "</p>"
+  }
+  <> "</section><section class='content'>"
+  <> body
+  <> "</section></main>"
+  <> en_footer
   <> "</body></html>"
 }
 
