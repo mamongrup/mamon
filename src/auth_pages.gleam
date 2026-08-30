@@ -8,7 +8,7 @@ fn page(
   intro: String,
   content: String,
 ) -> String {
-  "<!doctype html><html lang='tr'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><meta name='robots' content='noindex,nofollow'><link rel='icon' href='/favicon.png'><title>"
+  "<!doctype html><html lang='tr'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><meta name='robots' content='noindex,nofollow'><link rel='icon' href='/static/favicon.png'><title>"
   <> cms.escape(title)
   <> " | Mamon Yönetim</title>"
   <> styles
@@ -26,7 +26,8 @@ pub fn login(csrf_token: String, message: String) -> String {
     "" -> ""
     _ -> "<div class='notice error'>" <> cms.escape(message) <> "</div>"
   }
-  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
+  let csrf_field =
+    "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   page(
     "Giriş",
     "Panel girişi",
@@ -43,7 +44,8 @@ pub fn register(csrf_token: String, message: String) -> String {
     "" -> ""
     _ -> "<div class='notice error'>" <> cms.escape(message) <> "</div>"
   }
-  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
+  let csrf_field =
+    "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   page(
     "Hesap Oluştur",
     "Hesap oluşturun",
@@ -60,7 +62,8 @@ pub fn forgot(csrf_token: String, message: String) -> String {
     "" -> ""
     _ -> "<div class='notice'>" <> cms.escape(message) <> "</div>"
   }
-  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
+  let csrf_field =
+    "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   page(
     "Parola Hatırlatma",
     "Parolanızı yenileyin",
@@ -77,7 +80,8 @@ pub fn reset(csrf_token: String, token: String, message: String) -> String {
     "" -> ""
     _ -> "<div class='notice error'>" <> cms.escape(message) <> "</div>"
   }
-  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
+  let csrf_field =
+    "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   page(
     "Yeni Parola",
     "Yeni parola belirleyin",

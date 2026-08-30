@@ -42,9 +42,9 @@ pub fn connect() -> Database {
   case connection {
     Ok(connection) -> {
       io.println("PostgreSQL bağlantı havuzu hazır")
-    let _ = migrate(connection)
-    let _ = migrate_v2(connection)
-    Some(connection)
+      let _ = migrate(connection)
+      let _ = migrate_v2(connection)
+      Some(connection)
     }
     Error(_) -> {
       io.println("DATABASE_URL bulunamadı; uygulama veritabanı olmadan başladı")
@@ -255,11 +255,39 @@ pub fn list_entries(database: Database, table: String) -> List(Entry) {
   }
 }
 
-pub fn list_entries_by_category(database: Database, category: String) -> List(Entry) {
+pub fn list_published_entries(
+  database: Database,
+  table: String,
+) -> List(Entry) {
+  case database, table {
+    Some(connection), "pages" ->
+      pog.query(
+        "SELECT id, title, slug, summary, body, seo_title, seo_description, COALESCE(category, 'sayfa') FROM pages WHERE is_published = TRUE ORDER BY created_at DESC",
+      )
+      |> pog.returning(entry_decoder())
+      |> pog.execute(on: connection)
+      |> result.map(fn(data) { data.rows })
+      |> result.unwrap([])
+    Some(connection), "projects" ->
+      pog.query(
+        "SELECT id, title, slug, summary, body, seo_title, seo_description, 'projeler' FROM projects WHERE is_published = TRUE ORDER BY created_at DESC",
+      )
+      |> pog.returning(entry_decoder())
+      |> pog.execute(on: connection)
+      |> result.map(fn(data) { data.rows })
+      |> result.unwrap([])
+    _, _ -> []
+  }
+}
+
+pub fn list_entries_by_category(
+  database: Database,
+  category: String,
+) -> List(Entry) {
   case database {
     Some(connection) ->
       pog.query(
-        "SELECT id, title, slug, summary, body, seo_title, seo_description, COALESCE(category, 'sayfa') FROM pages WHERE category = $1 ORDER BY created_at DESC",
+        "SELECT id, title, slug, summary, body, seo_title, seo_description, COALESCE(category, 'sayfa') FROM pages WHERE category = $1 AND is_published = TRUE ORDER BY created_at DESC",
       )
       |> pog.parameter(pog.text(category))
       |> pog.returning(entry_decoder())
@@ -325,6 +353,17 @@ pub fn find_entry_by_id(
     Some(connection), "pages" ->
       pog.query(
         "SELECT id, title, slug, summary, body, seo_title, seo_description, COALESCE(category, 'sayfa') FROM pages WHERE id = $1 LIMIT 1",
+      )
+      |> pog.parameter(pog.int(id))
+      |> pog.returning(entry_decoder())
+      |> pog.execute(on: connection)
+      |> result.map(fn(data) { data.rows })
+      |> result.unwrap([])
+      |> list.first
+      |> option.from_result
+    Some(connection), "projects" ->
+      pog.query(
+        "SELECT id, title, slug, summary, body, seo_title, seo_description, 'projeler' FROM projects WHERE id = $1 LIMIT 1",
       )
       |> pog.parameter(pog.int(id))
       |> pog.returning(entry_decoder())
@@ -447,6 +486,36 @@ pub fn update_entry(
   }
 }
 
+pub fn update_page(
+  database: Database,
+  id: Int,
+  title: String,
+  slug: String,
+  summary: String,
+  body: String,
+  seo_title: String,
+  seo_description: String,
+  category: String,
+) -> Bool {
+  case database {
+    Some(connection) ->
+      pog.query(
+        "UPDATE pages SET title = $2, slug = $3, summary = $4, body = $5, seo_title = $6, seo_description = $7, category = $8, updated_at = NOW() WHERE id = $1",
+      )
+      |> pog.parameter(pog.int(id))
+      |> pog.parameter(pog.text(title))
+      |> pog.parameter(pog.text(slug))
+      |> pog.parameter(pog.text(summary))
+      |> pog.parameter(pog.text(body))
+      |> pog.parameter(pog.text(seo_title))
+      |> pog.parameter(pog.text(seo_description))
+      |> pog.parameter(pog.text(category))
+      |> pog.execute(on: connection)
+      |> result.is_ok
+    None -> False
+  }
+}
+
 pub fn seed_page(
   database: Database,
   title: String,
@@ -460,7 +529,7 @@ pub fn seed_page(
   case database {
     Some(connection) ->
       pog.query(
-        "INSERT INTO pages (title, slug, summary, body, seo_title, seo_description, category) VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, summary = EXCLUDED.summary, body = EXCLUDED.body, seo_title = EXCLUDED.seo_title, seo_description = EXCLUDED.seo_description, updated_at = NOW()",
+        "INSERT INTO pages (title, slug, summary, body, seo_title, seo_description, category) VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (slug) DO NOTHING",
       )
       |> pog.parameter(pog.text(title))
       |> pog.parameter(pog.text(slug))
@@ -516,7 +585,9 @@ pub fn save_contact(
 pub fn get_content(database: Database, key: String) -> String {
   case database {
     Some(connection) ->
-      pog.query("SELECT content_value FROM site_content WHERE content_key = $1 LIMIT 1")
+      pog.query(
+        "SELECT content_value FROM site_content WHERE content_key = $1 LIMIT 1",
+      )
       |> pog.parameter(pog.text(key))
       |> pog.returning({
         use val <- decode.field(0, decode.string)

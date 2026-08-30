@@ -48,6 +48,17 @@ fn seed_content(db: database.Database) -> Bool {
   let _ =
     database.seed_page(
       db,
+      "Ana Sayfa",
+      "anasayfa",
+      "Turizm, emlak ve inşaatta köklü deneyim; güvenilir ortaklıklar.",
+      "<section class='hero-corp'><div class='hero-main'><span class='overline'>2010'DAN BERİ GÜVENLE</span><h1>Köklü deneyim.<br><em>Kalıcı değer.</em></h1><p>Turizm, emlak ve inşaat alanlarında yerel uzmanlığı uluslararası bakış açısıyla birleştiriyor; insanlar, şehirler ve gelecek için güvenilir işler üretiyoruz.</p><div class='hero-buttons'><a class='button copper' href='/kurumsal/'>Bizi tanıyın <span>→</span></a><a class='button outline' href='/projeler/'>Projelerimiz <span>↗</span></a></div></div></section><section class='trustbar'><div><small>KURULUŞ</small><strong>2010</strong></div><div><small>UZMANLIK</small><strong>3 faaliyet alanı</strong></div><div><small>TURİZM</small><strong>TÜRSAB 13127</strong></div><div><small>ERİŞİM</small><strong>Türkiye ve dünya</strong></div></section><section class='intro-corp'><div><span class='section-no'>01 — MAMON</span></div><div><h2>Farklı sektörlerde,<br>aynı güven anlayışı.</h2><p>Mamon; turizmde misafirperverliği, emlakta doğru yatırımı, inşaatta ise nitelikli yaşam alanlarını odağına alır. Her faaliyet alanımız kendi uzman ekibi ve markasıyla gelişirken, tüm işlerimizin merkezinde şeffaflık, kalite ve uzun vadeli değer bulunur.</p></div></section><section class='divisions'><div class='divisions-head'><div><span class='section-no'>02 — FAALİYET ALANLARI</span><h2 class='section-title'>Uzmanlığımız</h2></div><p>Her alan için ayrı içerik, ayrı proje yapısı ve büyümeye hazır kurumsal sayfalar.</p></div><div class='division-grid'><article class='division'><span>01</span><h3>Turizm</h3><p>TÜRSAB üyesi acentemizle yerli ve yabancı misafirlere güvenilir seyahat çözümleri.</p><a href='/turizm/'>TURİZMİ KEŞFEDİN <b>→</b></a></article><article class='division'><span>02</span><h3>Emlak</h3><p>Antalya ve Muğla'da doğru lokasyon, doğru analiz ve güvenilir yatırım danışmanlığı.</p><a href='/emlak/'>EMLAĞI KEŞFEDİN <b>→</b></a></article><article class='division'><span>03</span><h3>İnşaat</h3><p>İşlevsel, estetik ve çevresiyle uyumlu yaşam alanları için proje geliştirme.</p><a href='/insaat/'>İNŞAATI KEŞFEDİN <b>→</b></a></article></div></section><section class='project-strip'><header><div><span class='section-no'>03 — PROJELER</span><h2 class='section-title'>Geleceğe bıraktığımız iz</h2></div><a class='button copper' href='/projeler/'>Tüm projeler →</a></header><div class='project-list'><article class='project-tile'><small>PROJE GELİŞTİRME</small><h3>Yeni projeler çok yakında</h3><p>İnşaat ve gayrimenkul projelerimiz bu alanda ayrı detay sayfalarıyla yayınlanacak.</p></article><article class='project-tile'><small>ANTALYA</small><h3>Yerel uzmanlık</h3></article><article class='project-tile'><small>MUĞLA</small><h3>Seçkin lokasyonlar</h3></article></div></section><section class='partner'><div class='partner-badge'><small>STRATEJİK PARTNER</small><b>Nexus Travel Tech</b></div><div><h2>Turizm deneyimini teknolojiyle güçlendiriyoruz.</h2><p>Nexus Travel Tech partnerliğimizle turizm sektörüne yönelik kapsamlı bilgi ağı çalışmalarına katkı sunuyor; yerel deneyimi küresel bağlantılarla bir araya getiriyoruz.</p></div></section><section class='cta' id='iletisim'><h2>Birlikte kalıcı değer üretelim.</h2><a class='button outline' href='mailto:info@mamon.com.tr'>info@mamon.com.tr <span>↗</span></a></section>",
+      "Mamon | Turizm, Emlak ve İnşaat",
+      "Turizm, emlak ve inşaatta köklü deneyim; güvenilir ortaklıklar.",
+      "anasayfa",
+    )
+  let _ =
+    database.seed_page(
+      db,
       "Turizm",
       "turizm",
       "TÜRSAB 13127 belgeli Mamon seyahat acentesi, yerli ve yabancı turistlere Türkiye genelinde hizmet verir.",
@@ -170,6 +181,7 @@ fn handle_route(
     Get, ["kurumsal"], _ -> render_cms_page(db, "kurumsal", "kurumsal")
     Get, ["iletisim"], _ -> render_cms_page(db, "iletisim", "iletisim")
     Get, ["en"], _ -> render_cms_page(db, "en", "en")
+    Get, ["projeler"], _ -> wisp.html_response(cms.projects_page(db), 200)
     Get, ["sayfa", slug], _ -> show_entry(db, "pages", "sayfa", slug)
     Get, ["projeler", slug], _ -> show_entry(db, "projects", "projeler", slug)
 
@@ -182,10 +194,12 @@ fn handle_route(
     Post, ["admin", "register"], True -> register(req, db, csrf_token)
     Get, ["admin", "forgot-password"], True ->
       wisp.html_response(auth_pages.forgot(csrf_token, ""), 200)
-    Post, ["admin", "forgot-password"], True -> forgot_password(req, db, csrf_token)
+    Post, ["admin", "forgot-password"], True ->
+      forgot_password(req, db, csrf_token)
     Get, ["admin", "reset-password", token], True ->
       wisp.html_response(auth_pages.reset(csrf_token, token, ""), 200)
-    Post, ["admin", "reset-password"], True -> reset_password(req, db, csrf_token)
+    Post, ["admin", "reset-password"], True ->
+      reset_password(req, db, csrf_token)
     Post, ["admin", "logout"], True -> logout(req, csrf_token)
 
     // --- Admin dashboard & CMS ---
@@ -197,10 +211,14 @@ fn handle_route(
       protected(req, db, fn() {
         wisp.html_response(cms.admin_entries(csrf_token, db, "pages"), 200)
       })
-    Get, ["admin", "pages", id_str], True ->
+    Get, ["admin", "pages", id_str, "edit"], True ->
       protected(req, db, fn() {
         case int.parse(id_str) {
-          Ok(id) -> wisp.html_response(cms.admin_edit_page(csrf_token, db, "pages", id), 200)
+          Ok(id) ->
+            wisp.html_response(
+              cms.admin_edit_page(csrf_token, db, "pages", id),
+              200,
+            )
           Error(_) -> wisp.html_response("Geçersiz ID", 400)
         }
       })
@@ -208,10 +226,14 @@ fn handle_route(
       protected(req, db, fn() {
         wisp.html_response(cms.admin_entries(csrf_token, db, "projects"), 200)
       })
-    Get, ["admin", "projects", id_str], True ->
+    Get, ["admin", "projects", id_str, "edit"], True ->
       protected(req, db, fn() {
         case int.parse(id_str) {
-          Ok(id) -> wisp.html_response(cms.admin_edit_page(csrf_token, db, "projects", id), 200)
+          Ok(id) ->
+            wisp.html_response(
+              cms.admin_edit_page(csrf_token, db, "projects", id),
+              200,
+            )
           Error(_) -> wisp.html_response("Geçersiz ID", 400)
         }
       })
@@ -225,8 +247,7 @@ fn handle_route(
       protected(req, db, fn() { update_entry(req, db, "projects", id_str) })
     Post, ["admin", table, id, "delete"], True ->
       protected(req, db, fn() { delete_entry(db, table, id) })
-    Post, ["admin", "save"], True ->
-      protected(req, db, fn() { saved(req, db) })
+    Post, ["admin", "save"], True -> protected(req, db, fn() { saved(req, db) })
 
     _, ["admin", ..], False ->
       wisp.html_response(
@@ -258,22 +279,22 @@ fn handle_route(
   }
 }
 
-fn render_cms_page(db: database.Database, category: String, kind: String) -> wisp.Response {
+fn render_cms_page(
+  db: database.Database,
+  category: String,
+  kind: String,
+) -> wisp.Response {
   let pages = database.list_entries_by_category(db, category)
   case list.first(pages) {
     Ok(entry) -> {
-      let nav_footer = case kind {
-        "en" -> #(
-          "<header class='header'><a class='logo' href='/en/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><nav class='nav'><a href='/en/'>Home</a><a href='/en/#about'>Corporate</a><a href='/turizm/'>Tourism</a><a href='/emlak/'>Real Estate</a><a href='/insaat/'>Construction</a><a href='/projeler/'>Projects</a><a href='/iletisim/'>İletişim</a><a class='language' href='/'>TR</a></nav></header>",
-          "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/en/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><p>Tourism • Real Estate • Construction</p></div><div><h4>LANGUAGE</h4><nav><a href='/'>Türkçe</a><a href='/en/'>English</a></nav></div><div><h4>CONTACT</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon</div></footer>",
-        )
-        _ -> #(
-          "<header class='header'><a class='logo' href='/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><nav class='nav'><a href='/'>Ana Sayfa</a><a href='/kurumsal/'>Kurumsal</a><a href='/turizm/'>Turizm</a><a href='/emlak/'>Emlak</a><a href='/insaat/'>İnşaat</a><a href='/projeler/'>Projeler</a><a href='/iletisim/'>İletişim</a><a class='language' href='/en/'>EN</a></nav></header>",
-          "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><p>Turizm, emlak ve inşaatta köklü deneyim; güvenilir ortaklıklar.</p></div><div><h4>KURUMSAL</h4><nav><a href='/kurumsal/'>Hakkımızda</a><a href='/projeler/'>Projeler</a></nav></div><div><h4>FAALİYETLER</h4><nav><a href='/turizm/'>Turizm</a><a href='/emlak/'>Emlak</a><a href='/insaat/'>İnşaat</a></nav></div><div><h4>İLETİŞİM</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon. Tüm hakları saklıdır.</div></footer>",
-        )
+      let footer_html = case kind {
+        "en" -> cms.en_footer
+        _ -> cms.corporate_footer
       }
-      let nav_html = nav_footer.0
-      let footer_html = nav_footer.1
+      let nav_html = case kind {
+        "en" -> cms.en_nav("/" <> kind)
+        _ -> cms.nav("/" <> kind)
+      }
       wisp.html_response(cms.page_template(entry, nav_html, footer_html), 200)
     }
     Error(_) ->
@@ -330,8 +351,10 @@ fn protected(
 }
 
 fn admin_dashboard(csrf_token: String, db: database.Database) -> String {
-  let hx = "hx-headers='" <> "{\"x-csrf-token\":\"" <> csrf_token <> "\"}" <> "'"
-  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
+  let hx =
+    "hx-headers='" <> "{\"x-csrf-token\":\"" <> csrf_token <> "\"}" <> "'"
+  let csrf_field =
+    "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   let all_pages = database.list_all_pages(db)
   let page_count = list.length(all_pages)
   let all_projects = database.list_entries(db, "projects")
@@ -349,9 +372,14 @@ fn admin_dashboard(csrf_token: String, db: database.Database) -> String {
   <> "<label>Üst başlık<input name='eyebrow' value='2010 DAN BERİ GÜVENLE'></label><label>Ana başlık<textarea name='title'>Köklü deneyim. Kalıcı değer.</textarea></label><label>Açıklama<textarea name='description'>Turizm, emlak ve inşaatta köklü deneyimi; teknoloji, güven ve insan odaklı hizmetle buluşturuyoruz.</textarea></label><div class='save-row'><div id='save'></div><button class='btn accent'>Kaydet</button></div></form></div></section></main></body></html>"
 }
 
-fn login(req: wisp.Request, db: database.Database, csrf_token: String) -> wisp.Response {
+fn login(
+  req: wisp.Request,
+  db: database.Database,
+  csrf_token: String,
+) -> wisp.Response {
   use form <- wisp.require_form(req)
-  let csrf_value = list.key_find(form.values, "_csrf_token") |> result.unwrap("")
+  let csrf_value =
+    list.key_find(form.values, "_csrf_token") |> result.unwrap("")
   case csrf.validate(req, csrf_value) {
     False ->
       wisp.html_response(
@@ -374,7 +402,8 @@ fn login(req: wisp.Request, db: database.Database, csrf_token: String) -> wisp.R
             list.key_find(form.values, "email")
             |> result.unwrap("")
             |> account_auth.normalize_email
-          let password = list.key_find(form.values, "password") |> result.unwrap("")
+          let password =
+            list.key_find(form.values, "password") |> result.unwrap("")
           case database.find_admin_by_email(db, email) {
             Some(#(database.AdminUser(id, _, _, True), hash)) ->
               case account_auth.verify_password(password, hash) {
@@ -411,7 +440,8 @@ fn register(
   csrf_token: String,
 ) -> wisp.Response {
   use form <- wisp.require_form(req)
-  let csrf_value = list.key_find(form.values, "_csrf_token") |> result.unwrap("")
+  let csrf_value =
+    list.key_find(form.values, "_csrf_token") |> result.unwrap("")
   case csrf.validate(req, csrf_value) {
     False ->
       wisp.html_response(
@@ -506,7 +536,8 @@ fn forgot_password(
   csrf_token: String,
 ) -> wisp.Response {
   use form <- wisp.require_form(req)
-  let csrf_value = list.key_find(form.values, "_csrf_token") |> result.unwrap("")
+  let csrf_value =
+    list.key_find(form.values, "_csrf_token") |> result.unwrap("")
   case csrf.validate(req, csrf_value) {
     False ->
       wisp.html_response(
@@ -563,7 +594,8 @@ fn reset_password(
   csrf_token: String,
 ) -> wisp.Response {
   use form <- wisp.require_form(req)
-  let csrf_value = list.key_find(form.values, "_csrf_token") |> result.unwrap("")
+  let csrf_value =
+    list.key_find(form.values, "_csrf_token") |> result.unwrap("")
   case csrf.validate(req, csrf_value) {
     False ->
       wisp.html_response(
@@ -571,9 +603,7 @@ fn reset_password(
         403,
       )
     True -> {
-      let get = fn(key) {
-        list.key_find(form.values, key) |> result.unwrap("")
-      }
+      let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
       let token = get("token")
       let password = get("password")
       let confirm = get("password_confirm")
@@ -625,7 +655,8 @@ fn reset_password(
 
 fn logout(req: wisp.Request, csrf_token: String) -> wisp.Response {
   use form <- wisp.require_form(req)
-  let csrf_value = list.key_find(form.values, "_csrf_token") |> result.unwrap("")
+  let csrf_value =
+    list.key_find(form.values, "_csrf_token") |> result.unwrap("")
   case csrf.validate(req, csrf_value) {
     False ->
       wisp.html_response(
@@ -652,7 +683,7 @@ fn show_entry(db, table, kind, slug) {
 fn create_page(req, db) {
   use form <- wisp.require_form(req)
   let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
-  let _ =
+  let created =
     database.create_page(
       db,
       get("title"),
@@ -663,13 +694,20 @@ fn create_page(req, db) {
       get("seo_description"),
       get("category"),
     )
-  wisp.html_response(cms.admin_entries("", db, "pages"), 200)
+  case created {
+    True -> wisp.html_response(cms.admin_entries("", db, "pages"), 201)
+    False ->
+      wisp.html_response(
+        "Sayfa oluşturulamadı. URL kısa adı benzersiz olmalıdır.",
+        400,
+      )
+  }
 }
 
 fn create_entry(req, db, table) {
   use form <- wisp.require_form(req)
   let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
-  let _ =
+  let created =
     database.create_entry(
       db,
       table,
@@ -680,7 +718,14 @@ fn create_entry(req, db, table) {
       get("seo_title"),
       get("seo_description"),
     )
-  wisp.html_response(cms.admin_entries("", db, table), 200)
+  case created {
+    True -> wisp.html_response(cms.admin_entries("", db, table), 201)
+    False ->
+      wisp.html_response(
+        "Proje oluşturulamadı. URL kısa adı benzersiz olmalıdır.",
+        400,
+      )
+  }
 }
 
 fn update_page(req, db, id_str) {
@@ -688,10 +733,9 @@ fn update_page(req, db, id_str) {
   let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
   case int.parse(id_str) {
     Ok(id) -> {
-      let _ =
-        database.update_entry(
+      let updated =
+        database.update_page(
           db,
-          "pages",
           id,
           get("title"),
           get("slug"),
@@ -699,11 +743,9 @@ fn update_page(req, db, id_str) {
           get("body"),
           get("seo_title"),
           get("seo_description"),
+          get("category"),
         )
-      wisp.html_response(
-        "<div class='saved'>✓ Değişiklikler kaydedildi.</div>",
-        200,
-      )
+      mutation_response(updated, "Değişiklikler kaydedildi.")
     }
     Error(_) -> wisp.html_response("Geçersiz ID", 400)
   }
@@ -714,7 +756,7 @@ fn update_entry(req, db, table, id_str) {
   let get = fn(key) { list.key_find(form.values, key) |> result.unwrap("") }
   case int.parse(id_str) {
     Ok(id) -> {
-      let _ =
+      let updated =
         database.update_entry(
           db,
           table,
@@ -726,10 +768,7 @@ fn update_entry(req, db, table, id_str) {
           get("seo_title"),
           get("seo_description"),
         )
-      wisp.html_response(
-        "<div class='saved'>✓ Değişiklikler kaydedildi.</div>",
-        200,
-      )
+      mutation_response(updated, "Değişiklikler kaydedildi.")
     }
     Error(_) -> wisp.html_response("Geçersiz ID", 400)
   }
@@ -738,16 +777,31 @@ fn update_entry(req, db, table, id_str) {
 fn delete_entry(db, table, id) {
   case int.parse(id) {
     Ok(id) -> {
-      let _ = database.delete_entry(db, table, id)
-      wisp.html_response("", 200)
+      case database.delete_entry(db, table, id) {
+        True -> wisp.html_response("", 200)
+        False -> wisp.html_response("Kayıt silinemedi.", 500)
+      }
     }
     Error(_) -> wisp.html_response("Geçersiz kayıt", 400)
   }
 }
 
+fn mutation_response(success: Bool, message: String) -> wisp.Response {
+  case success {
+    True ->
+      wisp.html_response("<div class='saved'>✓ " <> message <> "</div>", 200)
+    False ->
+      wisp.html_response(
+        "<div class='saved'>İşlem gerçekleştirilemedi.</div>",
+        500,
+      )
+  }
+}
+
 fn chat_message(req: wisp.Request, _csrf_token: String) -> wisp.Response {
   use form <- wisp.require_form(req)
-  let csrf_value = list.key_find(form.values, "_csrf_token") |> result.unwrap("")
+  let csrf_value =
+    list.key_find(form.values, "_csrf_token") |> result.unwrap("")
   case csrf.validate(req, csrf_value) {
     False -> wisp.html_response("CSRF token geçersiz.", 403)
     True -> {
@@ -764,8 +818,8 @@ fn chat_message(req: wisp.Request, _csrf_token: String) -> wisp.Response {
             )
           wisp.html_response(
             "<div class='chat-answer'><b>Mamon Asistan</b><p>"
-            <> cms.escape(answer)
-            <> "</p></div>",
+              <> cms.escape(answer)
+              <> "</p></div>",
             200,
           )
         }
@@ -780,20 +834,23 @@ fn message(
   _csrf_token: String,
 ) -> wisp.Response {
   use form <- wisp.require_form(req)
-  let csrf_value = list.key_find(form.values, "_csrf_token") |> result.unwrap("")
+  let csrf_value =
+    list.key_find(form.values, "_csrf_token") |> result.unwrap("")
   case csrf.validate(req, csrf_value) {
     False -> wisp.html_response("CSRF token geçersiz.", 403)
     True -> {
       let ip = get_client_ip(req)
       case rate_limit.check_rate(ip <> ":contact", 5, 900) {
         False ->
-          wisp.html_response("Çok fazla istek. 15 dakika sonra tekrar deneyin.", 429)
+          wisp.html_response(
+            "Çok fazla istek. 15 dakika sonra tekrar deneyin.",
+            429,
+          )
         True -> {
           let name = list.key_find(form.values, "name") |> result.unwrap("")
           let email = list.key_find(form.values, "email") |> result.unwrap("")
           let area = list.key_find(form.values, "area") |> result.unwrap("")
-          let text =
-            list.key_find(form.values, "message") |> result.unwrap("")
+          let text = list.key_find(form.values, "message") |> result.unwrap("")
           case database.save_contact(db, name, email, area, text) {
             True ->
               wisp.html_response(

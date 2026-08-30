@@ -68,5 +68,7 @@ gleam run   # Siteyi 8000 portunda çalıştırır
 gleam test  # Testleri çalıştırır
 ```
 
-Yayına almadan önce `src/mamon.gleam` içindeki geliştirme amaçlı gizli anahtarın
-ortam değişkeninden okunması ve yönetim paneline kimlik doğrulama eklenmesi gerekir.
+Yayında `SECRET_KEY_BASE` en az 64 rastgele karakterden oluşmalı; PostgreSQL
+bağlantısı doğrulanmış TLS için `sslmode=verify-full` kullanmalıdır. Yönetim
+panelinde imzalı oturum, CSRF koruması, giriş hız sınırı ve parola yenileme akışı
+etkindir.

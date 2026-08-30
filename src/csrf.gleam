@@ -20,10 +20,7 @@ pub fn validate(req: wisp.Request, submitted_token: String) -> Bool {
   case wisp.get_cookie(req, "_csrf_token", wisp.Signed) {
     Error(_) -> False
     Ok(cookie_token) ->
-      crypto.secure_compare(
-        <<submitted_token:utf8>>,
-        <<cookie_token:utf8>>,
-      )
+      crypto.secure_compare(<<submitted_token:utf8>>, <<cookie_token:utf8>>)
   }
 }
 

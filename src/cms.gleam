@@ -1,7 +1,7 @@
 import database.{type Database, type Entry, Entry}
-import gleam/option.{None, Some}
 import gleam/int
 import gleam/list
+import gleam/option.{None, Some}
 import gleam/string
 
 pub fn escape(value: String) -> String {
@@ -15,18 +15,70 @@ pub fn escape(value: String) -> String {
 
 // --- Corporate site templates ---
 
-const nav = "<header class='header'><a class='logo' href='/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><nav class='nav'><a href='/'>Ana Sayfa</a><a href='/kurumsal/'>Kurumsal</a><a href='/turizm/'>Turizm</a><a href='/emlak/'>Emlak</a><a href='/insaat/'>İnşaat</a><a href='/projeler/'>Projeler</a><a href='/iletisim/'>İletişim</a><a class='language' href='/en/'>EN</a></nav></header>"
+fn active(current: String, path: String) -> String {
+  case current == path {
+    True -> " class='active'"
+    False -> ""
+  }
+}
 
-const corporate_head = "<meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='icon' type='image/png' href='/favicon.png'><link rel='apple-touch-icon' href='/favicon.png'><link rel='manifest' href='/site.webmanifest'><meta name='theme-color' content='#06444c'><link rel='stylesheet' href='/corporate.css'><link rel='stylesheet' href='/logo.css'>"
+pub fn nav(current: String) -> String {
+  "<header class='header'><a class='logo' href='/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><nav class='nav'><a"
+  <> active(current, "/")
+  <> " href='/'>Ana Sayfa</a><a"
+  <> active(current, "/kurumsal/")
+  <> " href='/kurumsal/'>Kurumsal</a><a"
+  <> active(current, "/turizm/")
+  <> " href='/turizm/'>Turizm</a><a"
+  <> active(current, "/emlak/")
+  <> " href='/emlak/'>Emlak</a><a"
+  <> active(current, "/insaat/")
+  <> " href='/insaat/'>İnşaat</a><a"
+  <> active(current, "/projeler/")
+  <> " href='/projeler/'>Projeler</a><a"
+  <> active(current, "/iletisim/")
+  <> " href='/iletisim/'>İletişim</a><a class='language' href='/en/'>EN</a></nav></header>"
+}
 
-const corporate_footer = "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><p>Turizm, emlak ve inşaatta köklü deneyim; güvenilir ortaklıklar.</p></div><div><h4>KURUMSAL</h4><nav><a href='/kurumsal/'>Hakkımızda</a><a href='/projeler/'>Projeler</a></nav></div><div><h4>FAALİYETLER</h4><nav><a href='/turizm/'>Turizm</a><a href='/emlak/'>Emlak</a><a href='/insaat/'>İnşaat</a></nav></div><div><h4>İLETİŞİM</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon. Tüm hakları saklıdır.</div></footer>"
+const corporate_head = "<meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='icon' type='image/png' href='/static/favicon.png'><link rel='apple-touch-icon' href='/static/favicon.png'><link rel='manifest' href='/static/site.webmanifest'><meta name='theme-color' content='#06444c'><link rel='stylesheet' href='/static/corporate.css'><link rel='stylesheet' href='/static/logo.css'>"
 
-const en_nav = "<header class='header'><a class='logo' href='/en/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><nav class='nav'><a href='/en/'>Home</a><a href='/en/#about'>Corporate</a><a href='/turizm/'>Tourism</a><a href='/emlak/'>Real Estate</a><a href='/insaat/'>Construction</a><a href='/projeler/'>Projects</a><a href='/iletisim/'>İletişim</a><a class='language' href='/'>TR</a></nav></header>"
+pub const corporate_footer = "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><p>Turizm, emlak ve inşaatta köklü deneyim; güvenilir ortaklıklar.</p></div><div><h4>KURUMSAL</h4><nav><a href='/kurumsal/'>Hakkımızda</a><a href='/projeler/'>Projeler</a></nav></div><div><h4>FAALİYETLER</h4><nav><a href='/turizm/'>Turizm</a><a href='/emlak/'>Emlak</a><a href='/insaat/'>İnşaat</a></nav></div><div><h4>İLETİŞİM</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon. Tüm hakları saklıdır.</div></footer>"
 
-const en_footer = "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/en/'><span class='logo-mark'><img src='/logo-icon.png' alt=''></span>MAMON</a><p>Tourism • Real Estate • Construction</p></div><div><h4>LANGUAGE</h4><nav><a href='/'>Türkçe</a><a href='/en/'>English</a></nav></div><div><h4>CONTACT</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon</div></footer>"
+pub fn en_nav(current: String) -> String {
+  "<header class='header'><a class='logo' href='/en/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><nav class='nav'><a"
+  <> active(current, "/en/")
+  <> " href='/en/'>Home</a><a"
+  <> active(current, "/en/#about")
+  <> " href='/en/#about'>Corporate</a><a"
+  <> active(current, "/turizm/")
+  <> " href='/turizm/'>Tourism</a><a"
+  <> active(current, "/emlak/")
+  <> " href='/emlak/'>Real Estate</a><a"
+  <> active(current, "/insaat/")
+  <> " href='/insaat/'>Construction</a><a"
+  <> active(current, "/projeler/")
+  <> " href='/projeler/'>Projects</a><a"
+  <> active(current, "/iletisim/")
+  <> " href='/iletisim/'>İletişim</a><a class='language' href='/'>TR</a></nav></header>"
+}
 
-pub fn page_template(entry: Entry, nav_html: String, footer_html: String) -> String {
-  let Entry(_, title, slug, summary, body, seo_title, seo_description, _category) = entry
+pub const en_footer = "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/en/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><p>Tourism • Real Estate • Construction</p></div><div><h4>LANGUAGE</h4><nav><a href='/'>Türkçe</a><a href='/en/'>English</a></nav></div><div><h4>CONTACT</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon</div></footer>"
+
+pub fn page_template(
+  entry: Entry,
+  nav_html: String,
+  footer_html: String,
+) -> String {
+  let Entry(
+    _,
+    title,
+    _slug,
+    summary,
+    body,
+    seo_title,
+    seo_description,
+    category,
+  ) = entry
   let final_title = case seo_title {
     "" -> title <> " | Mamon"
     _ -> seo_title
@@ -35,34 +87,63 @@ pub fn page_template(entry: Entry, nav_html: String, footer_html: String) -> Str
     "" -> summary
     _ -> seo_description
   }
-  "<!doctype html><html lang='tr'><head>"
+  let lang = case category {
+    "en" -> "en"
+    _ -> "tr"
+  }
+  let canonical_kind = case category {
+    "anasayfa" -> ""
+    other -> other
+  }
+  "<!doctype html><html lang='"
+  <> lang
+  <> "'><head>"
   <> corporate_head
   <> "<title>"
   <> escape(final_title)
   <> "</title><meta name='description' content='"
   <> escape(final_description)
   <> "'><link rel='canonical' href='https://mamon.tr/"
-  <> escape(slug)
-  <> "/'></head><body>"
+  <> canonical_kind
+  <> case canonical_kind {
+    "" -> ""
+    _ -> "/"
+  }
+  <> "'></head><body>"
   <> nav_html
-  <> "<main><section class='page-hero'><span class='overline'>"
-  <> escape(string.uppercase(title))
-  <> "</span><h1>"
-  <> escape(title)
-  <> "</h1>"
-  <> case summary {
-      "" -> ""
-      _ -> "<p>" <> escape(summary) <> "</p>"
-    }
-  <> "</section><section class='content'>"
-  <> body
-  <> "</section></main>"
+  <> "<main>"
+  <> case category {
+    "anasayfa" | "en" -> body
+    _ ->
+      "<section class='page-hero'><span class='overline'>"
+      <> escape(string.uppercase(title))
+      <> "</span><h1>"
+      <> escape(title)
+      <> "</h1>"
+      <> case summary {
+        "" -> ""
+        _ -> "<p>" <> escape(summary) <> "</p>"
+      }
+      <> "</section><section class='content'>"
+      <> body
+      <> "</section>"
+  }
+  <> "</main>"
   <> footer_html
   <> "</body></html>"
 }
 
 pub fn entry_page(entry: Entry, kind: String) -> String {
-  let Entry(_, title, slug, summary, body, seo_title, seo_description, _category) = entry
+  let Entry(
+    _,
+    title,
+    slug,
+    summary,
+    body,
+    seo_title,
+    seo_description,
+    _category,
+  ) = entry
   let final_title = case seo_title {
     "" -> title <> " | Mamon"
     _ -> seo_title
@@ -71,12 +152,14 @@ pub fn entry_page(entry: Entry, kind: String) -> String {
     "" -> summary
     _ -> seo_description
   }
-  let nav_footer = case kind {
-    "en" -> #(en_nav, en_footer)
-    _ -> #(nav, corporate_footer)
+  let footer_html = case kind {
+    "en" -> en_footer
+    _ -> corporate_footer
   }
-  let nav_html = nav_footer.0
-  let footer_html = nav_footer.1
+  let nav_html = case kind {
+    "en" -> en_nav("/" <> kind <> "/" <> slug)
+    _ -> nav("/" <> kind <> "/" <> slug)
+  }
   "<!doctype html><html lang='tr'><head>"
   <> corporate_head
   <> "<title>"
@@ -110,15 +193,49 @@ pub fn entry_page(entry: Entry, kind: String) -> String {
   <> "</body></html>"
 }
 
+pub fn projects_page(database: Database) -> String {
+  let cards =
+    database.list_published_entries(database, "projects")
+    |> list.map(fn(entry) {
+      let Entry(_, title, slug, summary, _, _, _, _) = entry
+      "<article class='info-card'><h3>"
+      <> escape(title)
+      <> "</h3><p>"
+      <> escape(summary)
+      <> "</p><a class='button copper' href='/projeler/"
+      <> escape(slug)
+      <> "'>Projeyi inceleyin →</a></article>"
+    })
+    |> string.join("")
+  "<!doctype html><html lang='tr'><head>"
+  <> corporate_head
+  <> "<title>Projeler | Mamon</title><meta name='description' content='Mamon projeleri'><link rel='canonical' href='https://mamon.tr/projeler/'></head><body>"
+  <> nav("/projeler/")
+  <> "<main><section class='page-hero'><span class='overline'>PROJELER</span><h1>Geleceğe bıraktığımız iz</h1></section><section class='content'><div class='cards-list'>"
+  <> case cards {
+    "" -> "<p>Yeni projeler çok yakında burada yayınlanacak.</p>"
+    _ -> cards
+  }
+  <> "</div></section></main>"
+  <> corporate_footer
+  <> "</body></html>"
+}
+
 // --- Admin Panel ---
 
-pub fn admin_entries(csrf_token: String, database: Database, table: String) -> String {
+pub fn admin_entries(
+  csrf_token: String,
+  database: Database,
+  table: String,
+) -> String {
   let label = case table {
     "pages" -> "Sayfalar"
     _ -> "Projeler"
   }
-  let hx = "hx-headers='" <> "{\"x-csrf-token\":\"" <> csrf_token <> "\"}" <> "'"
-  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
+  let hx =
+    "hx-headers='" <> "{\"x-csrf-token\":\"" <> csrf_token <> "\"}" <> "'"
+  let csrf_field =
+    "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   let rows = case table {
     "pages" -> {
       let all_pages = database.list_all_pages(database)
@@ -196,18 +313,35 @@ pub fn admin_entries(csrf_token: String, database: Database, table: String) -> S
   <> "' hx-target='body' hx-push-url='true'>"
   <> csrf_field
   <> case table {
-      "pages" -> "<label>Kategori<select name='category'><option value='anasayfa'>Ana Sayfa</option><option value='kurumsal'>Kurumsal</option><option value='turizm'>Turizm</option><option value='emlak'>Emlak</option><option value='insaat'>İnşaat</option><option value='iletisim'>İletişim</option><option value='en'>English</option><option value='sayfa'>Diğer Sayfa</option></select></label>"
-      _ -> ""
-    }
+    "pages" ->
+      "<label>Kategori<select name='category'><option value='anasayfa'>Ana Sayfa</option><option value='kurumsal'>Kurumsal</option><option value='turizm'>Turizm</option><option value='emlak'>Emlak</option><option value='insaat'>İnşaat</option><option value='iletisim'>İletişim</option><option value='en'>English</option><option value='sayfa'>Diğer Sayfa</option></select></label>"
+    _ -> ""
+  }
   <> "<label>Başlık<input required name='title'></label><label>URL kısa adı<input required name='slug' placeholder='ornek-sayfa'></label><label>Kısa açıklama<textarea name='summary'></textarea></label><label>İçerik<textarea name='body' rows='12'></textarea></label><label>SEO başlığı<input name='seo_title'></label><label>Meta açıklaması<textarea name='seo_description' maxlength='160'></textarea></label><button class='btn accent'>Kaydet ve yayınla</button></form></div></section></main></body></html>"
 }
 
-pub fn admin_edit_page(csrf_token: String, database: Database, table: String, id: Int) -> String {
-  let hx = "hx-headers='" <> "{\"x-csrf-token\":\"" <> csrf_token <> "\"}" <> "'"
-  let csrf_field = "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
+pub fn admin_edit_page(
+  csrf_token: String,
+  database: Database,
+  table: String,
+  id: Int,
+) -> String {
+  let hx =
+    "hx-headers='" <> "{\"x-csrf-token\":\"" <> csrf_token <> "\"}" <> "'"
+  let csrf_field =
+    "<input type='hidden' name='_csrf_token' value='" <> csrf_token <> "'>"
   case database.find_entry_by_id(database, table, id) {
     Some(entry) -> {
-      let Entry(entry_id, title, slug, summary, body, seo_title, seo_description, category) = entry
+      let Entry(
+        entry_id,
+        title,
+        slug,
+        summary,
+        body,
+        seo_title,
+        seo_description,
+        category,
+      ) = entry
       let category_label = case category {
         "anasayfa" -> "Ana Sayfa"
         "kurumsal" -> "Kurumsal"
@@ -235,49 +369,50 @@ pub fn admin_edit_page(csrf_token: String, database: Database, table: String, id
       <> "/update' hx-target='#save-result' hx-swap='innerHTML'>"
       <> csrf_field
       <> case table {
-          "pages" -> "<label>Kategori<select name='category'><option value='anasayfa'"
-            <> case category {
-                "anasayfa" -> " selected"
-                _ -> ""
-              }
-            <> ">Ana Sayfa</option><option value='kurumsal'"
-            <> case category {
-                "kurumsal" -> " selected"
-                _ -> ""
-              }
-            <> ">Kurumsal</option><option value='turizm'"
-            <> case category {
-                "turizm" -> " selected"
-                _ -> ""
-              }
-            <> ">Turizm</option><option value='emlak'"
-            <> case category {
-                "emlak" -> " selected"
-                _ -> ""
-              }
-            <> ">Emlak</option><option value='insaat'"
-            <> case category {
-                "insaat" -> " selected"
-                _ -> ""
-              }
-            <> ">İnşaat</option><option value='iletisim'"
-            <> case category {
-                "iletisim" -> " selected"
-                _ -> ""
-              }
-            <> ">İletişim</option><option value='en'"
-            <> case category {
-                "en" -> " selected"
-                _ -> ""
-              }
-            <> ">English</option><option value='sayfa'"
-            <> case category {
-                "sayfa" -> " selected"
-                _ -> ""
-              }
-            <> ">Diğer Sayfa</option></select></label>"
-          _ -> ""
-        }
+        "pages" ->
+          "<label>Kategori<select name='category'><option value='anasayfa'"
+          <> case category {
+            "anasayfa" -> " selected"
+            _ -> ""
+          }
+          <> ">Ana Sayfa</option><option value='kurumsal'"
+          <> case category {
+            "kurumsal" -> " selected"
+            _ -> ""
+          }
+          <> ">Kurumsal</option><option value='turizm'"
+          <> case category {
+            "turizm" -> " selected"
+            _ -> ""
+          }
+          <> ">Turizm</option><option value='emlak'"
+          <> case category {
+            "emlak" -> " selected"
+            _ -> ""
+          }
+          <> ">Emlak</option><option value='insaat'"
+          <> case category {
+            "insaat" -> " selected"
+            _ -> ""
+          }
+          <> ">İnşaat</option><option value='iletisim'"
+          <> case category {
+            "iletisim" -> " selected"
+            _ -> ""
+          }
+          <> ">İletişim</option><option value='en'"
+          <> case category {
+            "en" -> " selected"
+            _ -> ""
+          }
+          <> ">English</option><option value='sayfa'"
+          <> case category {
+            "sayfa" -> " selected"
+            _ -> ""
+          }
+          <> ">Diğer Sayfa</option></select></label>"
+        _ -> ""
+      }
       <> "<label>Başlık<input required name='title' value='"
       <> escape(title)
       <> "'></label><label>URL kısa adı<input required name='slug' value='"
@@ -292,26 +427,33 @@ pub fn admin_edit_page(csrf_token: String, database: Database, table: String, id
       <> escape(seo_description)
       <> "</textarea></label><div class='save-row'><div id='save-result'></div><button class='btn accent'>Güncelle</button></div></form></div></section></main></body></html>"
     }
-    None -> "<!doctype html><html lang='tr'><head><meta charset='utf-8'></head><body><main><h1>Kayıt bulunamadı</h1><a href='/admin/pages'>← Geri dön</a></main></body></html>"
+    None ->
+      "<!doctype html><html lang='tr'><head><meta charset='utf-8'></head><body><main><h1>Kayıt bulunamadı</h1><a href='/admin/pages'>← Geri dön</a></main></body></html>"
   }
 }
 
 pub fn sitemap(database: Database) -> String {
   let urls =
-    [#("pages", "sayfa"), #("projects", "projeler")]
-    |> list.flat_map(fn(pair) {
-      database.list_entries(database, pair.0)
-      |> list.map(fn(entry) {
-        let Entry(_, _, slug, _, _, _, _, _) = entry
-        "<url><loc>https://mamon.tr/"
-        <> pair.1
-        <> "/"
-        <> escape(slug)
-        <> "</loc><changefreq>weekly</changefreq></url>"
-      })
+    database.list_published_entries(database, "pages")
+    |> list.append(database.list_published_entries(database, "projects"))
+    |> list.map(fn(entry) {
+      "<url><loc>https://mamon.tr"
+      <> entry_path(entry)
+      <> "</loc><changefreq>weekly</changefreq></url>"
     })
     |> string.join("")
-  "<?xml version='1.0' encoding='UTF-8'?><urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'><url><loc>https://mamon.tr/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>"
+  "<?xml version='1.0' encoding='UTF-8'?><urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>"
   <> urls
   <> "</urlset>"
+}
+
+pub fn entry_path(entry: Entry) -> String {
+  let Entry(_, _, slug, _, _, _, _, category) = entry
+  case category {
+    "anasayfa" -> "/"
+    "kurumsal" | "turizm" | "emlak" | "insaat" | "iletisim" | "en" ->
+      "/" <> category <> "/"
+    "projeler" -> "/projeler/" <> slug
+    _ -> "/sayfa/" <> slug
+  }
 }

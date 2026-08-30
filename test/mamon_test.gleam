@@ -1,4 +1,6 @@
 import account_auth
+import cms
+import database.{Entry}
 import gleeunit
 
 pub fn main() -> Nil {
@@ -24,4 +26,11 @@ pub fn account_validation_test() {
   assert !account_auth.valid_email("gecersiz")
   assert account_auth.valid_password("oniki-karakter")
   assert !account_auth.valid_password("kisa")
+}
+
+pub fn cms_entry_path_test() {
+  let page = Entry(1, "Kurumsal", "kurumsal", "", "", "", "", "kurumsal")
+  let project = Entry(2, "Proje", "ornek", "", "", "", "", "projeler")
+  assert cms.entry_path(page) == "/kurumsal/"
+  assert cms.entry_path(project) == "/projeler/ornek"
 }
