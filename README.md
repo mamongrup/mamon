@@ -46,6 +46,11 @@ kullanılmalıdır. Şema ayrıca `sql/001_initial.sql` içinde tutulur.
 DeepSeek anahtarı yalnızca sunucu ortamında tutulmalı, istemci koduna veya
 Git deposuna yazılmamalıdır.
 
+İletişim formu mesajları PostgreSQL'e kaydedilir ve sunucudaki `sendmail`
+programı üzerinden `info@mamon.com.tr` adresine iletilir. Üretim sunucusunda
+sendmail/Postfix yapılandırmasının ve alan adı SPF/DKIM kayıtlarının etkin olması
+gerekir.
+
 ## Site mimarisi
 
 Statik yayın paketi büyümeye uygun çok sayfalı yapıdadır:

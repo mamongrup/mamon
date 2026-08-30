@@ -851,16 +851,24 @@ fn message(
           let email = list.key_find(form.values, "email") |> result.unwrap("")
           let area = list.key_find(form.values, "area") |> result.unwrap("")
           let text = list.key_find(form.values, "message") |> result.unwrap("")
-          case database.save_contact(db, name, email, area, text) {
-            True ->
+          case
+            database.save_contact(db, name, email, area, text),
+            account_mail.send_contact(name, email, area, text)
+          {
+            True, True ->
               wisp.html_response(
                 "<div class='success'><b>Talebiniz alındı.</b><span>Ekibimiz en kısa sürede sizinle iletişime geçecek.</span></div>",
                 200,
               )
-            False ->
+            False, _ ->
               wisp.html_response(
                 "<div class='success'><b>Talep kaydedilemedi.</b><span>Lütfen doğrudan e-posta ile iletişime geçin.</span></div>",
                 503,
+              )
+            True, False ->
+              wisp.html_response(
+                "<div class='success'><b>Talebiniz kaydedildi ancak e-posta bildirimi gönderilemedi.</b><span>Ekibimiz yönetim kayıtlarından mesajınıza erişebilir.</span></div>",
+                202,
               )
           }
         }
