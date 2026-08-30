@@ -7,7 +7,7 @@ send_reset(Email, Url) ->
         Program ->
             Message = iolist_to_binary([
                 "To: ", Email, "\n",
-                "From: Mamon <noreply@mamon.tr>\n",
+                "From: Mamon <info@mamon.com.tr>\n",
                 "Subject: Mamon yonetim paneli parola yenileme\n",
                 "Content-Type: text/plain; charset=UTF-8\n\n",
                 "Parolanizi yenilemek icin 30 dakika icinde bu baglantiyi kullanin:\n",
@@ -26,7 +26,7 @@ send_contact(Name, Email, Area, Body) ->
             SafeEmail = sanitize_header(Email),
             Message = iolist_to_binary([
                 "To: info@mamon.com.tr\n",
-                "From: Mamon Web Sitesi <noreply@mamon.tr>\n",
+                "From: Mamon Web Sitesi <info@mamon.com.tr>\n",
                 "Reply-To: ", SafeEmail, "\n",
                 "Subject: Mamon web sitesi yeni iletisim mesaji\n",
                 "Content-Type: text/plain; charset=UTF-8\n\n",
