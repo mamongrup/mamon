@@ -15,7 +15,7 @@ send_reset(Email, Url) ->
             ]),
             Port = open_port({spawn_executable, Program}, [binary, exit_status, {args, ["-t"]}]),
             true = port_command(Port, Message),
-            true = port_command(Port, eof),
+            true = port_close(Port),
             true
     end.
 
@@ -38,7 +38,7 @@ send_contact(Name, Email, Area, Body) ->
             ]),
             Port = open_port({spawn_executable, Program}, [binary, exit_status, {args, ["-t"]}]),
             true = port_command(Port, Message),
-            true = port_command(Port, eof),
+            true = port_close(Port),
             true
     end.
 
