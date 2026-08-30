@@ -59,7 +59,7 @@ pub fn en_nav(current: String) -> String {
   <> active(current, "/projeler/")
   <> " href='/projeler/'>Projects</a><a"
   <> active(current, "/iletisim/")
-  <> " href='/iletisim/'>İletişim</a><a class='language' href='/'>TR</a></nav></header>"
+  <> " href='/iletisim/'>Contact</a><a class='language' href='/'>TR</a></nav></header>"
 }
 
 pub const en_footer = "<footer class='footer'><div class='footer-grid'><div><a class='logo' href='/en/'><span class='logo-mark'><img src='/static/logo-icon.png' alt=''></span>MAMON</a><p>Tourism • Real Estate • Construction</p></div><div><h4>LANGUAGE</h4><nav><a href='/'>Türkçe</a><a href='/en/'>English</a></nav></div><div><h4>CONTACT</h4><p>info@mamon.com.tr<br>Antalya, Türkiye</p></div></div><div class='footer-bottom'>© 2026 Mamon</div></footer>"
